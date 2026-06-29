@@ -1,0 +1,171 @@
+name: Step 3 Navigazione App
+
+on:
+  push:
+    paths:
+      - '.github/workflows/step3-navigazione-app.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch index.html app navigation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+
+          css = r'''
+/* STEP 3 - navigazione vera da app */
+.step3-hidden{display:none!important;}
+.category-index-view{max-width:1180px;margin:0 auto 60px;padding:22px;color:#fff;}
+.category-index-hero{position:relative;overflow:hidden;border-radius:32px;padding:28px;margin:0 0 18px;background:linear-gradient(135deg,#111827,#7c3aed);box-shadow:0 22px 70px rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.14);}
+.category-index-hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 20%,rgba(255,255,255,.26),transparent 18%),linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.42));}
+.category-index-hero>*{position:relative;z-index:1}.category-index-kicker{font-weight:1000;text-transform:uppercase;letter-spacing:.18em;color:#dbeafe;margin:0 0 8px}.category-index-title{font-size:clamp(2.3rem,6vw,4.4rem);line-height:.92;margin:0;text-transform:uppercase}.category-index-desc{font-weight:800;color:#e5e7eb;max-width:760px;margin:12px 0 0}.category-index-actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.app-nav-btn{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.10);color:#fff;border-radius:999px;padding:11px 14px;font-weight:1000;cursor:pointer}.app-nav-btn:hover{background:#a855f7;color:#fff}.category-recipe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.category-recipe-card{position:relative;min-height:128px;text-align:left;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;border-radius:24px;padding:18px;cursor:pointer;box-shadow:0 14px 38px rgba(0,0,0,.24);overflow:hidden}.category-recipe-card:after{content:"→";position:absolute;right:18px;bottom:14px;font-size:26px;color:#38bdf8;font-weight:1000}.category-recipe-card:hover{transform:translateY(-2px);transition:.16s ease;background:rgba(168,85,247,.22)}.category-recipe-card strong{display:block;font-size:1.15rem;line-height:1.15}.category-recipe-card span{display:block;color:#cbd5e1;margin-top:8px;font-weight:800;font-size:.9rem}.recipe-app-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.recipe-app-nav .app-nav-btn{padding:8px 11px;font-size:.9rem;background:rgba(255,255,255,.08)}body.recipe-mode #indice,body.recipe-mode #alphaPanel,body.recipe-mode #risultati{display:none!important;}body.recipe-mode .category:not(.active-recipe-category){display:none!important;}body.recipe-mode .active-recipe-category{display:block!important;}body.category-index-mode #indice,body.category-index-mode #alphaPanel,body.category-index-mode #ricette,body.category-index-mode .sticky{display:none!important;}body.home-mode .app-shell{display:none!important;}body.home-mode .home-hero{display:block!important;}@media(max-width:900px){.category-recipe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.category-index-view{padding:14px}.category-recipe-grid{grid-template-columns:1fr}.category-index-hero{padding:22px}.category-index-title{font-size:2.25rem}}
+'''
+          if 'STEP 3 - navigazione vera da app' not in html:
+              html = html.replace('</style>', css + '\n</style>', 1)
+
+          js = r'''
+<script id="step3-navigation-script">
+(function(){
+  if(window.__slushiStep3Loaded) return;
+  window.__slushiStep3Loaded = true;
+
+  var catInfo = {
+    'Regole base e consigli': ['🧭','Guida rapida','Regole pratiche, formule base e trucchi per non fare disastri.','linear-gradient(135deg,#1f2937,#0f172a)'],
+    'Granite classiche': ['❄️','Granite classiche','Limone, caffè, menta, cola e i grandi classici da banco bar.','linear-gradient(135deg,#0f766e,#38bdf8)'],
+    'Granite alla frutta': ['🍓','Granite alla frutta','Frutta vera, colori forti e sapori freschi senza effetto sciroppone.','linear-gradient(135deg,#be123c,#f59e0b)'],
+    'Frozen cocktail': ['🍹','Frozen cocktail','Mojito, Spritz, Margarita, Daiquiri e tutto il reparto festa.','linear-gradient(135deg,#7c2d12,#ea580c)'],
+    'Cocktail analcolici': ['🍸','Analcolici','Drink belli da vedere, freschi da bere e senza stendere nessuno.','linear-gradient(135deg,#065f46,#84cc16)'],
+    'Frappè': ['☕','Frappè','Caffè, cacao, banana, vaniglia e ricette fredde cremose.','linear-gradient(135deg,#78350f,#d97706)'],
+    'Milkshake': ['🥤','Milkshake','Nutella, Oreo, Kinder, pistacchio e roba poco innocente.','linear-gradient(135deg,#3f1d13,#a855f7)'],
+    'Caffè e bevande fredde': ['☕','Caffè freddi','Cappuccini ghiacciati, mocha, tè frozen e bevande fredde serie.','linear-gradient(135deg,#422006,#92400e)'],
+    'Smoothie ghiacciati': ['🥭','Smoothie','Frutta, yogurt e bevande un filo più leggere, senza fare i santi.','linear-gradient(135deg,#14532d,#22c55e)'],
+    'Ricette ignoranti': ['😈','Ricette ignoranti','Nutella, Oreo, Red Bull, Kinder: qui il dietologo cambia mestiere.','linear-gradient(135deg,#111827,#dc2626)'],
+    'Amari e digestivi frozen': ['🥃','Amari frozen','Amari, sambuca, brandy e digestivi ghiacciati da fine cena.','linear-gradient(135deg,#3f1d13,#b45309)'],
+    'Dessert freddi': ['🍨','Dessert freddi','Sorbetti, tiramisù, creme, cacao e dolci freddi al bicchiere.','linear-gradient(135deg,#581c87,#ec4899)']
+  };
+
+  function qs(s, root){ return (root||document).querySelector(s); }
+  function qsa(s, root){ return Array.prototype.slice.call((root||document).querySelectorAll(s)); }
+
+  var main = qs('main');
+  if(!main) return;
+
+  var categoryIndex = document.createElement('section');
+  categoryIndex.id = 'categoryIndexView';
+  categoryIndex.className = 'category-index-view step3-hidden';
+  main.insertBefore(categoryIndex, main.firstChild);
+
+  function titleOf(recipe){
+    var h = qs('h3', recipe);
+    return h ? h.textContent.trim() : recipe.getAttribute('data-name') || 'Ricetta';
+  }
+  function metaOf(recipe){
+    var m = qs('.meta', recipe);
+    return m ? m.textContent.trim() : recipe.getAttribute('data-category') || '';
+  }
+  function clearModes(){
+    document.body.classList.remove('home-mode','category-index-mode','recipe-mode');
+    categoryIndex.classList.add('step3-hidden');
+    qsa('.category').forEach(function(c){ c.classList.remove('active-recipe-category'); c.classList.remove('step3-hidden'); });
+    qsa('.recipe').forEach(function(r){ r.classList.remove('step3-hidden'); });
+  }
+  function showHome(){
+    clearModes();
+    document.body.classList.remove('app-open');
+    document.body.classList.add('home-mode');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function showCategoryIndex(cat){
+    clearModes();
+    document.body.classList.add('app-open','category-index-mode');
+    document.body.classList.remove('home-mode','recipe-mode');
+    var info = catInfo[cat] || ['🥷',cat,'Ricette della categoria.','linear-gradient(135deg,#111827,#7c3aed)'];
+    var recipes = qsa('.recipe[data-category="'+CSS.escape(cat)+'"]');
+    var cards = recipes.map(function(r){
+      return '<button type="button" class="category-recipe-card" data-recipe-id="'+r.id+'" data-cat="'+cat.replace(/"/g,'&quot;')+'"><strong>'+titleOf(r)+'</strong><span>'+metaOf(r)+'</span></button>';
+    }).join('');
+    categoryIndex.innerHTML = '<div class="category-index-hero" style="background:'+info[3]+'"><p class="category-index-kicker">'+info[0]+' Categoria</p><h1 class="category-index-title">'+cat+'</h1><p class="category-index-desc">'+info[2]+'</p><div class="category-index-actions"><button type="button" class="app-nav-btn" data-go-home>🏠 Torna alla home</button></div></div><div class="category-recipe-grid">'+cards+'</div>';
+    categoryIndex.classList.remove('step3-hidden');
+    qsa('[data-go-home]', categoryIndex).forEach(function(b){ b.addEventListener('click', showHome); });
+    qsa('.category-recipe-card', categoryIndex).forEach(function(b){ b.addEventListener('click', function(){ showRecipe(cat, b.getAttribute('data-recipe-id')); }); });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function showRecipe(cat, recipeId){
+    clearModes();
+    document.body.classList.add('app-open','recipe-mode');
+    document.body.classList.remove('home-mode','category-index-mode');
+    var category = qs('.category[data-category="'+CSS.escape(cat)+'"]');
+    if(category) category.classList.add('active-recipe-category');
+    qsa('.category').forEach(function(c){ if(c !== category) c.classList.add('step3-hidden'); });
+    qsa('.recipe').forEach(function(r){ r.classList.toggle('step3-hidden', r.getAttribute('data-category') !== cat); });
+    addRecipeNavs();
+    setTimeout(function(){
+      var target = document.getElementById(recipeId);
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    },80);
+  }
+  function addRecipeNavs(){
+    qsa('.recipe').forEach(function(r){
+      if(qs('.recipe-app-nav', r)) return;
+      var cat = r.getAttribute('data-category');
+      var nav = document.createElement('div');
+      nav.className = 'recipe-app-nav';
+      nav.innerHTML = '<button type="button" class="app-nav-btn" data-back-cat="'+cat.replace(/"/g,'&quot;')+'">← Torna all’indice categoria</button><button type="button" class="app-nav-btn" data-recipe-home>🏠 Torna alla home</button>';
+      var top = qs('.recipe-top', r) || r.firstChild;
+      r.insertBefore(nav, top);
+      qs('[data-back-cat]', nav).addEventListener('click', function(){ showCategoryIndex(cat); });
+      qs('[data-recipe-home]', nav).addEventListener('click', showHome);
+    });
+  }
+
+  qsa('[data-home-category]').forEach(function(card){
+    card.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      showCategoryIndex(card.getAttribute('data-home-category'));
+    }, true);
+  });
+
+  var allTop = document.getElementById('openAllRecipesTop');
+  if(allTop){
+    allTop.addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      clearModes();
+      document.body.classList.add('app-open');
+      var ric = document.getElementById('ricette');
+      if(ric) ric.scrollIntoView({behavior:'smooth'});
+    }, true);
+  }
+
+  qsa('.home-nav a[href="#homeApp"]').forEach(function(a){
+    a.addEventListener('click', function(e){ e.preventDefault(); showHome(); }, true);
+  });
+
+  addRecipeNavs();
+})();
+</script>
+'''
+          if 'step3-navigation-script' not in html:
+              html = html.replace('</body>', js + '\n</body>', 1)
+
+          Path('.github/workflows/step3-navigazione-app.yml').unlink(missing_ok=True)
+          p.write_text(html, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/step3-navigazione-app.yml
+          git diff --cached --quiet || git commit -m "Add app navigation: home category index recipe"
+          git push
