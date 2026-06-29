@@ -3,81 +3,340 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ninja SLUSHi Ricettario</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
-
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
-
+<title>Ninja SLUSHi - App Ricettario Offline</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
 <style>
 :root {
-  --bg:#fff8ef; --paper:#ffffff; --ink:#1f1f1f; --muted:#6b625a;
-  --accent:#e85d2a; --accent2:#0e8f8f; --line:#ead8c8; --soft:#fff0df;
+  --bg:#fff8ef;
+  --paper:#ffffff;
+  --ink:#1f1f1f;
+  --muted:#6b625a;
+  --accent:#e85d2a;
+  --accent2:#0e8f8f;
+  --line:#ead8c8;
+  --soft:#fff0df;
 }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; }
-body { margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; background:var(--bg); color:var(--ink); line-height:1.55; }
-body.dark { --bg:#15110f; --paper:#211b18; --ink:#fff7ef; --muted:#cdbdaf; --accent:#ff7b43; --accent2:#55d7df; --line:#3a302b; --soft:#2b211d; }
-.hero { padding:54px 22px; background:linear-gradient(135deg,#ffead5,#ffffff,#dff7f6); border-bottom:1px solid var(--line); }
-.dark .hero { background:linear-gradient(135deg,#2a170d,#1a1716,#0e2728); }
-.wrap { max-width:1120px; margin:auto; }
-.kicker { color:var(--accent); font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
-h1 { font-size:clamp(2.2rem,6vw,5rem); line-height:.95; margin:.15em 0; }
-.stats { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
-.stat { background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:9px 14px; font-weight:800; }
-.sticky { position:sticky; top:0; z-index:20; background:rgba(255,248,239,.96); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-.dark .sticky { background:rgba(21,17,15,.96); }
-.tools { max-width:1120px; margin:auto; padding:12px 22px; display:grid; grid-template-columns:1fr auto auto auto auto; gap:10px; }
-input, button, .btn { border:1px solid var(--line); background:var(--paper); color:var(--ink); border-radius:999px; padding:11px 14px; font-size:1rem; }
-button, .btn { font-weight:800; cursor:pointer; text-decoration:none; }
-button:hover, .btn:hover { background:var(--accent); color:#fff; }
-main { max-width:1120px; margin:auto; padding:22px; }
-.panel { background:var(--paper); border:1px solid var(--line); border-radius:24px; padding:22px; margin:22px 0; }
-h2 { font-size:2rem; border-bottom:3px solid var(--accent); padding-bottom:8px; scroll-margin-top:96px; }
-.toc-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
-.toc-block { background:var(--soft); border:1px solid var(--line); border-radius:18px; padding:16px; }
-.toc-block h3, .alpha h3 { margin:.2rem 0 .6rem; color:var(--accent2); }
-.toc-links { display:flex; flex-direction:column; gap:5px; }
-.toc-links a, .alpha a { display:block; color:var(--ink); text-decoration:none; padding:6px 8px; border-radius:10px; }
-.toc-links a:hover, .alpha a:hover { background:var(--accent); color:#fff; }
-.alpha small { color:var(--muted); margin-left:8px; }
-.filters { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
-.filter.active, .fav-on { background:var(--accent); color:#fff; }
-.category { margin:36px 0 54px; }
-.recipe { background:var(--paper); border:1px solid var(--line); border-radius:24px; padding:22px; margin:18px 0; box-shadow:0 8px 24px rgba(80,40,10,.06); scroll-margin-top:105px; }
-.dark .recipe { box-shadow:none; }
-.recipe:target { outline:4px solid var(--accent); }
-.recipe-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
-.badge { color:#fff; background:var(--accent2); border-radius:999px; padding:5px 10px; font-weight:900; font-size:.85rem; }
-.back { color:var(--muted); font-weight:800; text-decoration:none; }
-.recipe h3 { font-size:1.45rem; margin:.7rem 0 .1rem; }
-.meta { color:var(--muted); font-weight:800; margin-top:0; }
-.recipe-actions { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
-.recipe-actions button { padding:8px 11px; font-size:.9rem; }
-.dose-label { display:inline-block; color:var(--muted); font-weight:900; align-self:center; }
-.cols { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-h4 { color:var(--accent2); margin-bottom:.3rem; }
-.tip { background:#fff7d6; border-left:5px solid #f0b400; border-radius:12px; padding:10px 12px; }
-.dark .tip { background:#352b13; }
-.hidden { display:none!important; }
-.float-top { position:fixed; right:18px; bottom:18px; z-index:30; }
-footer { text-align:center; color:var(--muted); padding:32px; }
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.55;
+}
+body.dark {
+  --bg:#15110f;
+  --paper:#211b18;
+  --ink:#fff7ef;
+  --muted:#cdbdaf;
+  --accent:#ff7b43;
+  --accent2:#55d7df;
+  --line:#3a302b;
+  --soft:#2b211d;
+}
+.hero {
+  padding:54px 22px;
+  background:linear-gradient(135deg,#ffead5,#ffffff,#dff7f6);
+  border-bottom:1px solid var(--line);
+}
+.dark .hero {
+  background:linear-gradient(135deg,#2a170d,#1a1716,#0e2728);
+}
+.wrap {
+  max-width:1120px;
+  margin:auto;
+}
+.kicker {
+  color:var(--accent);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+h1 {
+  font-size:clamp(2.2rem,6vw,5rem);
+  line-height:.95;
+  margin:.15em 0;
+}
+.stats {
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:22px;
+}
+.stat {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:999px;
+  padding:9px 14px;
+  font-weight:800;
+}
+.sticky {
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(255,248,239,.96);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.dark .sticky {
+  background:rgba(21,17,15,.96);
+}
+.tools {
+  max-width:1120px;
+  margin:auto;
+  padding:12px 22px;
+  display:grid;
+  grid-template-columns:1fr auto auto auto auto;
+  gap:10px;
+}
+input, button, .btn {
+  border:1px solid var(--line);
+  background:var(--paper);
+  color:var(--ink);
+  border-radius:999px;
+  padding:11px 14px;
+  font-size:1rem;
+}
+button, .btn {
+  font-weight:800;
+  cursor:pointer;
+  text-decoration:none;
+}
+button:hover, .btn:hover {
+  background:var(--accent);
+  color:#fff;
+}
+main {
+  max-width:1120px;
+  margin:auto;
+  padding:22px;
+}
+.panel {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:22px;
+  margin:22px 0;
+}
+h2 {
+  font-size:2rem;
+  border-bottom:3px solid var(--accent);
+  padding-bottom:8px;
+  scroll-margin-top:96px;
+}
+.toc-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:14px;
+}
+.toc-block {
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+}
+.toc-block h3, .alpha h3 {
+  margin:.2rem 0 .6rem;
+  color:var(--accent2);
+}
+.toc-links {
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.toc-links a, .alpha a {
+  display:block;
+  color:var(--ink);
+  text-decoration:none;
+  padding:6px 8px;
+  border-radius:10px;
+}
+.toc-links a:hover, .alpha a:hover {
+  background:var(--accent);
+  color:#fff;
+}
+.alpha small {
+  color:var(--muted);
+  margin-left:8px;
+}
+.filters {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:14px 0;
+}
+.filter.active, .fav-on {
+  background:var(--accent);
+  color:#fff;
+}
+.category {
+  margin:36px 0 54px;
+}
+.recipe {
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:22px;
+  margin:18px 0;
+  box-shadow:0 8px 24px rgba(80,40,10,.06);
+  scroll-margin-top:105px;
+}
+.dark .recipe {
+  box-shadow:none;
+}
+.recipe:target {
+  outline:4px solid var(--accent);
+}
+.recipe-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.badge {
+  color:#fff;
+  background:var(--accent2);
+  border-radius:999px;
+  padding:5px 10px;
+  font-weight:900;
+  font-size:.85rem;
+}
+.back {
+  color:var(--muted);
+  font-weight:800;
+  text-decoration:none;
+}
+.recipe h3 {
+  font-size:1.45rem;
+  margin:.7rem 0 .1rem;
+}
+.meta {
+  color:var(--muted);
+  font-weight:800;
+  margin-top:0;
+}
+.recipe-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:12px 0;
+}
+.recipe-actions button {
+  padding:8px 11px;
+  font-size:.9rem;
+}
+.dose-label {
+  display:inline-block;
+  color:var(--muted);
+  font-weight:900;
+  align-self:center;
+}
+.cols {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+h4 {
+  color:var(--accent2);
+  margin-bottom:.3rem;
+}
+.tip {
+  background:#fff7d6;
+  border-left:5px solid #f0b400;
+  border-radius:12px;
+  padding:10px 12px;
+}
+.dark .tip {
+  background:#352b13;
+}
+.hidden {
+  display:none!important;
+}
+.float-top {
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:30;
+}
+footer {
+  text-align:center;
+  color:var(--muted);
+  padding:32px;
+}
 @media(max-width:760px) {
-  .tools { grid-template-columns:1fr; }
-  .cols { grid-template-columns:1fr; }
-  .recipe-actions button { flex:1; min-width:110px; }
+  .tools {
+    grid-template-columns:1fr;
+  }
+  .cols {
+    grid-template-columns:1fr;
+  }
+  .recipe-actions button {
+    flex:1;
+    min-width:110px;
+  }
 }
 @media print {
-  .sticky,.float-top,.back,.recipe-actions,#alphaPanel { display:none; }
-  body { background:white; }
-  .recipe { box-shadow:none; page-break-inside:avoid; }
+  .sticky,.float-top,.back,.recipe-actions,#alphaPanel {
+    display:none;
+  }
+  body {
+    background:white;
+  }
+  .recipe {
+    box-shadow:none;
+    page-break-inside:avoid;
+  }
 }
+.home-hero{min-height:100vh;padding:28px 22px 54px;background:radial-gradient(circle at 15% 10%,rgba(168,85,247,.22),transparent 28%),radial-gradient(circle at 80% 20%,rgba(56,189,248,.18),transparent 30%),linear-gradient(135deg,#030712,#07111f 55%,#020617);color:#fff}
+.home-bar{max-width:1180px;margin:0 auto 28px;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:16px 18px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:rgba(3,7,18,.72);backdrop-filter:blur(12px);box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.logo-wrap{display:flex;align-items:center;gap:14px}.logo-badge{width:64px;height:64px;border-radius:22px;display:grid;place-items:center;background:linear-gradient(135deg,#0ea5e9,#a855f7,#f97316);box-shadow:0 0 28px rgba(168,85,247,.35);font-size:34px}.logo-title{font-size:clamp(1.6rem,4vw,3.2rem);font-weight:1000;letter-spacing:.02em;line-height:.95}.logo-title span{background:linear-gradient(90deg,#fff,#38bdf8,#a855f7,#fb7185);-webkit-background-clip:text;background-clip:text;color:transparent}.logo-sub{color:#cbd5e1;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.home-nav{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end}.home-nav a{color:#e5e7eb;text-decoration:none;font-weight:900;padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04)}.home-nav a:hover{background:#a855f7;color:white}.home-main{max-width:1180px;margin:auto}.home-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:26px 0 18px}.home-title-row h2{border:0;padding:0;margin:0;color:#fff;font-size:clamp(2rem,5vw,3.8rem);letter-spacing:.01em}.home-title-row p{margin:.25rem 0 0;color:#cbd5e1;font-size:1.1rem;font-weight:700}.home-search{display:flex;gap:10px;min-width:min(430px,100%)}.home-search input{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:white}.home-search input::placeholder{color:#94a3b8}.home-search button{background:#a855f7;color:white;border-color:#a855f7}
+.category-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.cat-card{position:relative;min-height:220px;border-radius:26px;overflow:hidden;text-decoration:none;color:white;border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 50px rgba(0,0,0,.35);background:var(--card-bg);isolation:isolate}.cat-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 25%,rgba(255,255,255,.34),transparent 18%),linear-gradient(180deg,transparent 0%,rgba(0,0,0,.72) 100%);z-index:-1}.cat-card::after{content:attr(data-emoji);position:absolute;right:22px;top:16px;font-size:96px;filter:drop-shadow(0 18px 26px rgba(0,0,0,.38));opacity:.95}.cat-content{position:absolute;left:22px;right:22px;bottom:20px}.cat-pill{display:inline-flex;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);align-items:center;justify-content:center;font-size:30px;margin-bottom:12px}.cat-card h3{color:white;font-size:1.9rem;margin:0;text-transform:uppercase;line-height:1}.cat-card p{color:#dbeafe;margin:.35rem 0 0;font-weight:800}.cat-card:hover{transform:translateY(-4px);transition:.18s ease;box-shadow:0 24px 70px rgba(0,0,0,.48)}
+.app-shell{display:none}body.app-open .home-hero{display:none}body.app-open .app-shell{display:block}
+@media(max-width:980px){.category-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.home-title-row{display:block}.home-search{margin-top:16px}}@media(max-width:640px){.home-bar{align-items:flex-start}.home-nav{display:none}.category-grid{grid-template-columns:1fr}.cat-card{min-height:190px}.cat-card::after{font-size:82px}.logo-badge{width:54px;height:54px;border-radius:18px}.home-search{flex-direction:column}}
 </style>
 </head>
 <body>
+
+<section class="home-hero" id="homeApp">
+  <div class="home-bar">
+    <div class="logo-wrap"><div class="logo-badge">🥷</div><div><div class="logo-title">NINJA <span>SLUSHi</span></div><div class="logo-sub">Il ricettario definitivo</div></div></div>
+    <nav class="home-nav"><a href="#homeApp">Home</a><a href="#" id="openAllRecipesTop">Tutte le ricette</a><a href="#" id="openFavTop">Preferite</a><a href="#indice">Indice</a></nav>
+  </div>
+  <div class="home-main">
+    <div class="home-title-row"><div><h2>Scegli una categoria</h2><p>Granite, cocktail frozen, milkshake e ricette ignoranti. Tutto in stile app.</p></div><div class="home-search"><input id="homeSearch" type="search" placeholder="Cerca una ricetta... es. mojito, caffè, Nutella"><button id="homeSearchBtn" type="button">🔎 Cerca</button></div></div>
+    <div class="category-grid"><a class="cat-card" href="#ricette" data-home-category="Regole base e consigli" data-emoji="🧭" style="--card-bg:linear-gradient(135deg,#1f2937,#0f172a)">
+      <div class="cat-content"><div class="cat-pill">🧭</div><h3>Guida</h3><p>3 ricette</p><p>Regole e trucchi</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Granite classiche" data-emoji="❄️" style="--card-bg:linear-gradient(135deg,#0f766e,#38bdf8)">
+      <div class="cat-content"><div class="cat-pill">❄️</div><h3>Granite</h3><p>18 ricette</p><p>Limone, caffè, menta e classici</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Granite alla frutta" data-emoji="🍓" style="--card-bg:linear-gradient(135deg,#be123c,#f59e0b)">
+      <div class="cat-content"><div class="cat-pill">🍓</div><h3>Frutta</h3><p>19 ricette</p><p>Mango, pesca, anguria e frutti rossi</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Frozen cocktail" data-emoji="🍹" style="--card-bg:linear-gradient(135deg,#7c2d12,#ea580c)">
+      <div class="cat-content"><div class="cat-pill">🍹</div><h3>Frozen cocktail</h3><p>27 ricette</p><p>Mojito, Spritz, Margarita e Daiquiri</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Cocktail analcolici" data-emoji="🍸" style="--card-bg:linear-gradient(135deg,#065f46,#84cc16)">
+      <div class="cat-content"><div class="cat-pill">🍸</div><h3>Analcolici</h3><p>14 ricette</p><p>Drink belli, freschi e zero alcol</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Frappè" data-emoji="☕" style="--card-bg:linear-gradient(135deg,#78350f,#d97706)">
+      <div class="cat-content"><div class="cat-pill">☕</div><h3>Frappè</h3><p>14 ricette</p><p>Caffè, cacao, vaniglia e banana</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Milkshake" data-emoji="🥤" style="--card-bg:linear-gradient(135deg,#3f1d13,#a855f7)">
+      <div class="cat-content"><div class="cat-pill">🥤</div><h3>Milkshake</h3><p>18 ricette</p><p>Nutella, Oreo, Kinder e pistacchio</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Caffè e bevande fredde" data-emoji="☕" style="--card-bg:linear-gradient(135deg,#422006,#92400e)">
+      <div class="cat-content"><div class="cat-pill">☕</div><h3>Caffè freddi</h3><p>12 ricette</p><p>Cappuccini ghiacciati, mocha e tè</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Smoothie ghiacciati" data-emoji="🥭" style="--card-bg:linear-gradient(135deg,#14532d,#22c55e)">
+      <div class="cat-content"><div class="cat-pill">🥭</div><h3>Smoothie</h3><p>12 ricette</p><p>Frutta, yogurt e bevande leggere</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Ricette ignoranti" data-emoji="😈" style="--card-bg:linear-gradient(135deg,#111827,#dc2626)">
+      <div class="cat-content"><div class="cat-pill">😈</div><h3>Ignoranti</h3><p>16 ricette</p><p>Nutella Oreo, Red Bull e robe criminali</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Amari e digestivi frozen" data-emoji="🥃" style="--card-bg:linear-gradient(135deg,#3f1d13,#b45309)">
+      <div class="cat-content"><div class="cat-pill">🥃</div><h3>Amari frozen</h3><p>8 ricette</p><p>Amari, sambuca e digestivi ghiacciati</p></div>
+    </a><a class="cat-card" href="#ricette" data-home-category="Dessert freddi" data-emoji="🍨" style="--card-bg:linear-gradient(135deg,#581c87,#ec4899)">
+      <div class="cat-content"><div class="cat-pill">🍨</div><h3>Dessert</h3><p>8 ricette</p><p>Sorbetti, tiramisù e creme fredde</p></div>
+    </a></div>
+  </div>
+</section>
+<div class="app-shell">
+
 <header class="hero" id="home">
   <div class="wrap">
     <div class="kicker">App offline</div>
@@ -108,12 +367,12 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     
     <section class="toc-block" data-category="Granite classiche">
       <h3>Granite classiche</h3>
-      <div class="toc-links"><a href="#granita-al-limone">Granita al limone</a><a href="#granita-al-caffe">Granita al caffè</a><a href="#granita-alla-mandorla">Granita alla mandorla</a><a href="#granita-alla-fragola">Granita alla fragola</a><a href="#granita-alla-menta">Granita alla menta</a><a href="#granita-all-arancia-rossa">Granita all&#x27;arancia rossa</a><a href="#granita-al-pompelmo-rosa">Granita al pompelmo rosa</a><a href="#granita-al-chinotto">Granita al chinotto</a><a href="#granita-alla-cola">Granita alla cola</a><a href="#granita-alla-cedrata">Granita alla cedrata</a><a href="#granita-limone-e-basilico">Granita limone e basilico</a><a href="#granita-limone-e-zenzero">Granita limone e zenzero</a><a href="#granita-menta-e-lime">Granita menta e lime</a><a href="#granita-cola-e-lime">Granita cola e lime</a><a href="#granita-gassosa-e-limone">Granita gassosa e limone</a><a href="#granita-orzata">Granita orzata</a><a href="#granita-tamarindo">Granita tamarindo</a><a href="#granita-latte-di-cocco-e-lime">Granita latte di cocco e lime</a></div>
+      <div class="toc-links"><a href="#granita-al-limone">Granita al limone</a><a href="#granita-al-caffe">Granita al caffè</a><a href="#granita-alla-mandorla">Granita alla mandorla</a><a href="#granita-alla-fragola">Granita alla fragola</a><a href="#granita-alla-menta">Granita alla menta</a><a href="#granita-all-arancia-rossa">Granita all'arancia rossa</a><a href="#granita-al-pompelmo-rosa">Granita al pompelmo rosa</a><a href="#granita-al-chinotto">Granita al chinotto</a><a href="#granita-alla-cola">Granita alla cola</a><a href="#granita-alla-cedrata">Granita alla cedrata</a><a href="#granita-limone-e-basilico">Granita limone e basilico</a><a href="#granita-limone-e-zenzero">Granita limone e zenzero</a><a href="#granita-menta-e-lime">Granita menta e lime</a><a href="#granita-cola-e-lime">Granita cola e lime</a><a href="#granita-gassosa-e-limone">Granita gassosa e limone</a><a href="#granita-orzata">Granita orzata</a><a href="#granita-tamarindo">Granita tamarindo</a><a href="#granita-latte-di-cocco-e-lime">Granita latte di cocco e lime</a></div>
     </section>
     
     <section class="toc-block" data-category="Granite alla frutta">
       <h3>Granite alla frutta</h3>
-      <div class="toc-links"><a href="#anguria-e-lime">Anguria e lime</a><a href="#melone">Melone</a><a href="#pesca">Pesca</a><a href="#mango">Mango</a><a href="#ananas">Ananas</a><a href="#frutti-di-bosco">Frutti di bosco</a><a href="#lampone">Lampone</a><a href="#kiwi">Kiwi</a><a href="#pera-e-cannella">Pera e cannella</a><a href="#mela-verde">Mela verde</a><a href="#granita-albicocca">Granita albicocca</a><a href="#granita-ciliegia">Granita ciliegia</a><a href="#granita-melagrana">Granita melagrana</a><a href="#granita-passion-fruit">Granita passion fruit</a><a href="#granita-mango-passion">Granita mango passion</a><a href="#granita-uva-fragola">Granita uva fragola</a><a href="#granita-fichi-d-india">Granita fichi d&#x27;India</a><a href="#granita-pera-e-lime">Granita pera e lime</a><a href="#granita-banana-e-cacao">Granita banana e cacao</a></div>
+      <div class="toc-links"><a href="#anguria-e-lime">Anguria e lime</a><a href="#melone">Melone</a><a href="#pesca">Pesca</a><a href="#mango">Mango</a><a href="#ananas">Ananas</a><a href="#frutti-di-bosco">Frutti di bosco</a><a href="#lampone">Lampone</a><a href="#kiwi">Kiwi</a><a href="#pera-e-cannella">Pera e cannella</a><a href="#mela-verde">Mela verde</a><a href="#granita-albicocca">Granita albicocca</a><a href="#granita-ciliegia">Granita ciliegia</a><a href="#granita-melagrana">Granita melagrana</a><a href="#granita-passion-fruit">Granita passion fruit</a><a href="#granita-mango-passion">Granita mango passion</a><a href="#granita-uva-fragola">Granita uva fragola</a><a href="#granita-fichi-d-india">Granita fichi d'India</a><a href="#granita-pera-e-lime">Granita pera e lime</a><a href="#granita-banana-e-cacao">Granita banana e cacao</a></div>
     </section>
     
     <section class="toc-block" data-category="Frozen cocktail">
@@ -133,7 +392,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     
     <section class="toc-block" data-category="Milkshake">
       <h3>Milkshake</h3>
-      <div class="toc-links"><a href="#milkshake-nutella">Milkshake Nutella</a><a href="#milkshake-oreo">Milkshake Oreo</a><a href="#milkshake-vaniglia">Milkshake vaniglia</a><a href="#milkshake-cioccolato">Milkshake cioccolato</a><a href="#milkshake-fragola">Milkshake fragola</a><a href="#milkshake-banana-split">Milkshake banana split</a><a href="#milkshake-bounty">Milkshake Bounty</a><a href="#milkshake-kinder">Milkshake Kinder</a><a href="#milkshake-pistacchio">Milkshake pistacchio</a><a href="#milkshake-tiramisu">Milkshake tiramisù</a><a href="#milkshake-snickers">Milkshake Snickers</a><a href="#milkshake-mars">Milkshake Mars</a><a href="#milkshake-cheesecake-fragola">Milkshake cheesecake fragola</a><a href="#milkshake-burro-d-arachidi">Milkshake burro d&#x27;arachidi</a><a href="#milkshake-mou-salato">Milkshake mou salato</a><a href="#milkshake-raffaello">Milkshake Raffaello</a><a href="#milkshake-ferrero-rocher">Milkshake Ferrero Rocher</a><a href="#milkshake-menta-cioccolato">Milkshake menta cioccolato</a></div>
+      <div class="toc-links"><a href="#milkshake-nutella">Milkshake Nutella</a><a href="#milkshake-oreo">Milkshake Oreo</a><a href="#milkshake-vaniglia">Milkshake vaniglia</a><a href="#milkshake-cioccolato">Milkshake cioccolato</a><a href="#milkshake-fragola">Milkshake fragola</a><a href="#milkshake-banana-split">Milkshake banana split</a><a href="#milkshake-bounty">Milkshake Bounty</a><a href="#milkshake-kinder">Milkshake Kinder</a><a href="#milkshake-pistacchio">Milkshake pistacchio</a><a href="#milkshake-tiramisu">Milkshake tiramisù</a><a href="#milkshake-snickers">Milkshake Snickers</a><a href="#milkshake-mars">Milkshake Mars</a><a href="#milkshake-cheesecake-fragola">Milkshake cheesecake fragola</a><a href="#milkshake-burro-d-arachidi">Milkshake burro d'arachidi</a><a href="#milkshake-mou-salato">Milkshake mou salato</a><a href="#milkshake-raffaello">Milkshake Raffaello</a><a href="#milkshake-ferrero-rocher">Milkshake Ferrero Rocher</a><a href="#milkshake-menta-cioccolato">Milkshake menta cioccolato</a></div>
     </section>
     
     <section class="toc-block" data-category="Caffè e bevande fredde">
@@ -165,16 +424,15 @@ footer { text-align:center; color:var(--muted); padding:32px; }
 
   <section class="panel alpha" id="alphaPanel">
     <h2>Indice alfabetico</h2>
-    <h3 class="alpha-letter">A</h3><a href="#affogato-frozen">Affogato frozen <small>Caffè e bevande fredde</small></a><a href="#amaro-del-capo-frozen">Amaro del Capo frozen <small>Amari e digestivi frozen</small></a><a href="#americano-frozen">Americano Frozen <small>Frozen cocktail</small></a><a href="#ananas">Ananas <small>Granite alla frutta</small></a><a href="#ananas-basilico">Ananas basilico <small>Cocktail analcolici</small></a><a href="#ananas-cocco-analcolico">Ananas cocco analcolico <small>Cocktail analcolici</small></a><a href="#anguria-e-lime">Anguria e lime <small>Granite alla frutta</small></a><a href="#aperol-red-bull-frozen">Aperol Red Bull frozen <small>Ricette ignoranti</small></a><a href="#arancia-rossa-e-rosmarino">Arancia rossa e rosmarino <small>Cocktail analcolici</small></a><h3 class="alpha-letter">B</h3><a href="#bellini-frozen">Bellini Frozen <small>Frozen cocktail</small></a><a href="#blue-lagoon-frozen">Blue Lagoon Frozen <small>Frozen cocktail</small></a><a href="#bounty-espresso-frozen">Bounty espresso frozen <small>Ricette ignoranti</small></a><h3 class="alpha-letter">C</h3><a href="#caffe-latte-mandorla">Caffè latte mandorla <small>Caffè e bevande fredde</small></a><a href="#caffe-nocciola-frozen">Caffè nocciola frozen <small>Caffè e bevande fredde</small></a><a href="#caffe-shakerato-slush">Caffè shakerato slush <small>Caffè e bevande fredde</small></a><a href="#caipiroska-fragola">Caipiroska fragola <small>Frozen cocktail</small></a><a href="#campari-orange-frozen">Campari Orange Frozen <small>Frozen cocktail</small></a><a href="#cappuccino-ghiacciato">Cappuccino ghiacciato <small>Caffè e bevande fredde</small></a><a href="#caramel-macchiato-frozen">Caramel macchiato frozen <small>Caffè e bevande fredde</small></a><a href="#cetriolo-lime-menta">Cetriolo lime menta <small>Cocktail analcolici</small></a><a href="#cioccolata-fredda-fondente">Cioccolata fredda fondente <small>Dessert freddi</small></a><a href="#cola-rum-frozen">Cola rum frozen <small>Ricette ignoranti</small></a><a href="#cold-brew-tonic-frozen">Cold brew tonic frozen <small>Caffè e bevande fredde</small></a><a href="#come-usare-bene-la-ninja-slushi">Come usare bene la Ninja SLUSHi <small>Regole base e consigli</small></a><a href="#cosmopolitan-frozen">Cosmopolitan Frozen <small>Frozen cocktail</small></a><a href="#cranberry-lime-zero-alcol">Cranberry lime zero alcol <small>Cocktail analcolici</small></a><a href="#crema-limone-frozen">Crema limone frozen <small>Dessert freddi</small></a><a href="#cuba-libre-frozen">Cuba Libre Frozen <small>Frozen cocktail</small></a><a href="#cynar-soda-frozen">Cynar Soda frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">D</h3><a href="#daiquiri-fragola">Daiquiri fragola <small>Frozen cocktail</small></a><a href="#disaronno-sour-frozen">Disaronno Sour frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">E</h3><a href="#espresso-martini-frozen">Espresso Martini Frozen <small>Frozen cocktail</small></a><a href="#estathe-pesca-limone">Estathé pesca limone <small>Ricette ignoranti</small></a><h3 class="alpha-letter">F</h3><a href="#finto-spritz">Finto Spritz <small>Cocktail analcolici</small></a><a href="#formula-base-frozen-cocktail">Formula base frozen cocktail <small>Regole base e consigli</small></a><a href="#formula-base-granita">Formula base granita <small>Regole base e consigli</small></a><a href="#fragola-lime-soda">Fragola lime soda <small>Cocktail analcolici</small></a><a href="#frappe-al-caffe">Frappè al caffè <small>Frappè</small></a><a href="#frappe-al-cioccolato">Frappè al cioccolato <small>Frappè</small></a><a href="#frappe-alla-vaniglia">Frappè alla vaniglia <small>Frappè</small></a><a href="#frappe-banana">Frappè banana <small>Frappè</small></a><a href="#frappe-caramello">Frappè caramello <small>Frappè</small></a><a href="#frappe-cocco">Frappè cocco <small>Frappè</small></a><a href="#frappe-cocco-e-ananas">Frappè cocco e ananas <small>Frappè</small></a><a href="#frappe-fragola">Frappè fragola <small>Frappè</small></a><a href="#frappe-mango">Frappè mango <small>Frappè</small></a><a href="#frappe-nocciola">Frappè nocciola <small>Frappè</small></a><a href="#frappe-nocciola-e-caffe">Frappè nocciola e caffè <small>Frappè</small></a><a href="#frappe-nutella-leggero">Frappè Nutella leggero <small>Frappè</small></a><a href="#frappe-stracciatella">Frappè stracciatella <small>Frappè</small></a><a href="#frappe-yogurt-e-miele">Frappè yogurt e miele <small>Frappè</small></a><a href="#frozen-yogurt-miele-e-noci">Frozen yogurt miele e noci <small>Dessert freddi</small></a><a href="#frutti-di-bosco">Frutti di bosco <small>Granite alla frutta</small></a><h3 class="alpha-letter">G</h3><a href="#gin-lemon-frozen">Gin Lemon Frozen <small>Frozen cocktail</small></a><a href="#ginger-lime-frozen">Ginger lime frozen <small>Cocktail analcolici</small></a><a href="#granita-al-caffe">Granita al caffè <small>Granite classiche</small></a><a href="#granita-al-chinotto">Granita al chinotto <small>Granite classiche</small></a><a href="#granita-al-limone">Granita al limone <small>Granite classiche</small></a><a href="#granita-al-pompelmo-rosa">Granita al pompelmo rosa <small>Granite classiche</small></a><a href="#granita-albicocca">Granita albicocca <small>Granite alla frutta</small></a><a href="#granita-all-arancia-rossa">Granita all&#x27;arancia rossa <small>Granite classiche</small></a><a href="#granita-alla-cedrata">Granita alla cedrata <small>Granite classiche</small></a><a href="#granita-alla-cola">Granita alla cola <small>Granite classiche</small></a><a href="#granita-alla-fragola">Granita alla fragola <small>Granite classiche</small></a><a href="#granita-alla-mandorla">Granita alla mandorla <small>Granite classiche</small></a><a href="#granita-alla-menta">Granita alla menta <small>Granite classiche</small></a><a href="#granita-banana-e-cacao">Granita banana e cacao <small>Granite alla frutta</small></a><a href="#granita-ciliegia">Granita ciliegia <small>Granite alla frutta</small></a><a href="#granita-cola-e-lime">Granita cola e lime <small>Granite classiche</small></a><a href="#granita-fichi-d-india">Granita fichi d&#x27;India <small>Granite alla frutta</small></a><a href="#granita-gassosa-e-limone">Granita gassosa e limone <small>Granite classiche</small></a><a href="#granita-latte-di-cocco-e-lime">Granita latte di cocco e lime <small>Granite classiche</small></a><a href="#granita-limone-e-basilico">Granita limone e basilico <small>Granite classiche</small></a><a href="#granita-limone-e-zenzero">Granita limone e zenzero <small>Granite classiche</small></a><a href="#granita-mango-passion">Granita mango passion <small>Granite alla frutta</small></a><a href="#granita-melagrana">Granita melagrana <small>Granite alla frutta</small></a><a href="#granita-menta-e-lime">Granita menta e lime <small>Granite classiche</small></a><a href="#granita-orzata">Granita orzata <small>Granite classiche</small></a><a href="#granita-passion-fruit">Granita passion fruit <small>Granite alla frutta</small></a><a href="#granita-pera-e-lime">Granita pera e lime <small>Granite alla frutta</small></a><a href="#granita-tamarindo">Granita tamarindo <small>Granite classiche</small></a><a href="#granita-uva-fragola">Granita uva fragola <small>Granite alla frutta</small></a><h3 class="alpha-letter">H</h3><a href="#hugo-frozen">Hugo Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">J</h3><a href="#jager-cola-frozen">Jäger Cola frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">K</h3><a href="#kinder-bueno-frozen">Kinder Bueno frozen <small>Ricette ignoranti</small></a><a href="#kinder-caffe-frozen">Kinder caffè frozen <small>Ricette ignoranti</small></a><a href="#kiwi">Kiwi <small>Granite alla frutta</small></a><h3 class="alpha-letter">L</h3><a href="#lampone">Lampone <small>Granite alla frutta</small></a><a href="#latte-macchiato-frozen">Latte macchiato frozen <small>Caffè e bevande fredde</small></a><a href="#limonata-alla-menta">Limonata alla menta <small>Cocktail analcolici</small></a><a href="#limoncello-spritz-frozen">Limoncello Spritz Frozen <small>Frozen cocktail</small></a><a href="#long-island-slush">Long Island Slush <small>Frozen cocktail</small></a><h3 class="alpha-letter">M</h3><a href="#mai-tai-frozen">Mai Tai Frozen <small>Frozen cocktail</small></a><a href="#mango">Mango <small>Granite alla frutta</small></a><a href="#margarita-frozen">Margarita Frozen <small>Frozen cocktail</small></a><a href="#margarita-piccante">Margarita piccante <small>Ricette ignoranti</small></a><a href="#matcha-latte-frozen">Matcha latte frozen <small>Caffè e bevande fredde</small></a><a href="#mela-verde">Mela verde <small>Granite alla frutta</small></a><a href="#mela-verde-ginger">Mela verde ginger <small>Cocktail analcolici</small></a><a href="#melone">Melone <small>Granite alla frutta</small></a><a href="#milkshake-banana-split">Milkshake banana split <small>Milkshake</small></a><a href="#milkshake-bounty">Milkshake Bounty <small>Milkshake</small></a><a href="#milkshake-burro-d-arachidi">Milkshake burro d&#x27;arachidi <small>Milkshake</small></a><a href="#milkshake-cheesecake-fragola">Milkshake cheesecake fragola <small>Milkshake</small></a><a href="#milkshake-cioccolato">Milkshake cioccolato <small>Milkshake</small></a><a href="#milkshake-ferrero-rocher">Milkshake Ferrero Rocher <small>Milkshake</small></a><a href="#milkshake-fragola">Milkshake fragola <small>Milkshake</small></a><a href="#milkshake-kinder">Milkshake Kinder <small>Milkshake</small></a><a href="#milkshake-mars">Milkshake Mars <small>Milkshake</small></a><a href="#milkshake-menta-cioccolato">Milkshake menta cioccolato <small>Milkshake</small></a><a href="#milkshake-mou-salato">Milkshake mou salato <small>Milkshake</small></a><a href="#milkshake-nutella">Milkshake Nutella <small>Milkshake</small></a><a href="#milkshake-oreo">Milkshake Oreo <small>Milkshake</small></a><a href="#milkshake-pistacchio">Milkshake pistacchio <small>Milkshake</small></a><a href="#milkshake-raffaello">Milkshake Raffaello <small>Milkshake</small></a><a href="#milkshake-snickers">Milkshake Snickers <small>Milkshake</small></a><a href="#milkshake-tiramisu">Milkshake tiramisù <small>Milkshake</small></a><a href="#milkshake-vaniglia">Milkshake vaniglia <small>Milkshake</small></a><a href="#mocha-frozen">Mocha frozen <small>Caffè e bevande fredde</small></a><a href="#mojito-frozen">Mojito Frozen <small>Frozen cocktail</small></a><a href="#mojito-passion-fruit">Mojito passion fruit <small>Ricette ignoranti</small></a><a href="#mojito-xxl-da-festa">Mojito XXL da festa <small>Ricette ignoranti</small></a><a href="#molinari-lemon-slush">Molinari Lemon Slush <small>Ricette ignoranti</small></a><a href="#monster-mango-frozen">Monster Mango frozen <small>Ricette ignoranti</small></a><a href="#montenegro-lemon-frozen">Montenegro Lemon frozen <small>Amari e digestivi frozen</small></a><a href="#moscow-mule-frozen">Moscow Mule Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">N</h3><a href="#negroni-frozen-leggero">Negroni Frozen leggero <small>Frozen cocktail</small></a><a href="#nutella-oreo-devastante">Nutella Oreo devastante <small>Ricette ignoranti</small></a><a href="#nutella-pistacchio-doppia-crema">Nutella pistacchio doppia crema <small>Ricette ignoranti</small></a><h3 class="alpha-letter">P</h3><a href="#paloma-frozen">Paloma Frozen <small>Frozen cocktail</small></a><a href="#panna-cotta-frozen">Panna cotta frozen <small>Dessert freddi</small></a><a href="#pera-e-cannella">Pera e cannella <small>Granite alla frutta</small></a><a href="#pesca">Pesca <small>Granite alla frutta</small></a><a href="#pesca-te-e-limone">Pesca tè e limone <small>Cocktail analcolici</small></a><a href="#pistacchio-criminale">Pistacchio criminale <small>Ricette ignoranti</small></a><a href="#pina-colada-frozen">Piña Colada Frozen <small>Frozen cocktail</small></a><a href="#pornstar-martini-frozen">Pornstar Martini Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">R</h3><a href="#ramazzotti-orange-frozen">Ramazzotti Orange frozen <small>Amari e digestivi frozen</small></a><a href="#red-bull-slush">Red Bull slush <small>Ricette ignoranti</small></a><a href="#ricotta-cacao-frozen">Ricotta cacao frozen <small>Dessert freddi</small></a><a href="#rossini-frozen">Rossini Frozen <small>Frozen cocktail</small></a><a href="#rum-punch-frozen">Rum Punch Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">S</h3><a href="#sambuca-caffe-frozen">Sambuca caffè frozen <small>Amari e digestivi frozen</small></a><a href="#sangria-frozen">Sangria Frozen <small>Frozen cocktail</small></a><a href="#sex-on-the-beach-frozen">Sex on the Beach Frozen <small>Frozen cocktail</small></a><a href="#shirley-temple-frozen">Shirley Temple Frozen <small>Cocktail analcolici</small></a><a href="#smoothie-ananas-banana">Smoothie ananas banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-ananas-menta">Smoothie ananas menta <small>Smoothie ghiacciati</small></a><a href="#smoothie-avena-banana">Smoothie avena banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-cacao-banana">Smoothie cacao banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-fragola-banana">Smoothie fragola banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-fragola-cocco">Smoothie fragola cocco <small>Smoothie ghiacciati</small></a><a href="#smoothie-frutti-rossi-yogurt">Smoothie frutti rossi yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-mango-yogurt">Smoothie mango yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-mela-cannella">Smoothie mela cannella <small>Smoothie ghiacciati</small></a><a href="#smoothie-mela-kiwi">Smoothie mela kiwi <small>Smoothie ghiacciati</small></a><a href="#smoothie-pesca-yogurt">Smoothie pesca yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-tropicale">Smoothie tropicale <small>Smoothie ghiacciati</small></a><a href="#sorbetto-limone-cremoso">Sorbetto limone cremoso <small>Dessert freddi</small></a><a href="#spritz-fragola">Spritz fragola <small>Ricette ignoranti</small></a><a href="#spritz-frozen">Spritz Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">T</h3><a href="#tiramisu-frozen-analcolico">Tiramisù frozen analcolico <small>Dessert freddi</small></a><a href="#tropical-zero">Tropical zero <small>Cocktail analcolici</small></a><a href="#te-limone-frozen">Tè limone frozen <small>Caffè e bevande fredde</small></a><a href="#te-pesca-frozen">Tè pesca frozen <small>Caffè e bevande fredde</small></a><h3 class="alpha-letter">V</h3><a href="#vecchia-romagna-cola-frozen">Vecchia Romagna Cola frozen <small>Amari e digestivi frozen</small></a><a href="#virgin-mojito">Virgin Mojito <small>Cocktail analcolici</small></a><a href="#vodka-lemon-frozen">Vodka Lemon Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">Z</h3><a href="#zabaione-frozen">Zabaione frozen <small>Dessert freddi</small></a>
+    <h3 class="alpha-letter">A</h3><a href="#affogato-frozen">Affogato frozen <small>Caffè e bevande fredde</small></a><a href="#amaro-del-capo-frozen">Amaro del Capo frozen <small>Amari e digestivi frozen</small></a><a href="#americano-frozen">Americano Frozen <small>Frozen cocktail</small></a><a href="#ananas">Ananas <small>Granite alla frutta</small></a><a href="#ananas-basilico">Ananas basilico <small>Cocktail analcolici</small></a><a href="#ananas-cocco-analcolico">Ananas cocco analcolico <small>Cocktail analcolici</small></a><a href="#anguria-e-lime">Anguria e lime <small>Granite alla frutta</small></a><a href="#aperol-red-bull-frozen">Aperol Red Bull frozen <small>Ricette ignoranti</small></a><a href="#arancia-rossa-e-rosmarino">Arancia rossa e rosmarino <small>Cocktail analcolici</small></a><h3 class="alpha-letter">B</h3><a href="#bellini-frozen">Bellini Frozen <small>Frozen cocktail</small></a><a href="#blue-lagoon-frozen">Blue Lagoon Frozen <small>Frozen cocktail</small></a><a href="#bounty-espresso-frozen">Bounty espresso frozen <small>Ricette ignoranti</small></a><h3 class="alpha-letter">C</h3><a href="#caffe-latte-mandorla">Caffè latte mandorla <small>Caffè e bevande fredde</small></a><a href="#caffe-nocciola-frozen">Caffè nocciola frozen <small>Caffè e bevande fredde</small></a><a href="#caffe-shakerato-slush">Caffè shakerato slush <small>Caffè e bevande fredde</small></a><a href="#caipiroska-fragola">Caipiroska fragola <small>Frozen cocktail</small></a><a href="#campari-orange-frozen">Campari Orange Frozen <small>Frozen cocktail</small></a><a href="#cappuccino-ghiacciato">Cappuccino ghiacciato <small>Caffè e bevande fredde</small></a><a href="#caramel-macchiato-frozen">Caramel macchiato frozen <small>Caffè e bevande fredde</small></a><a href="#cetriolo-lime-menta">Cetriolo lime menta <small>Cocktail analcolici</small></a><a href="#chinotto">Chinotto <small>Bevande ghiacciate</small></a><a href="#cioccolata-fredda-fondente">Cioccolata fredda fondente <small>Dessert freddi</small></a><a href="#coca-cola">Coca-Cola <small>Bevande ghiacciate</small></a><a href="#coca-cola-1">Coca-Cola <small>Bevande ghiacciate</small></a><a href="#cola-rum-frozen">Cola rum frozen <small>Ricette ignoranti</small></a><a href="#cold-brew-tonic-frozen">Cold brew tonic frozen <small>Caffè e bevande fredde</small></a><a href="#come-usare-bene-la-ninja-slushi">Come usare bene la Ninja SLUSHi <small>Regole base e consigli</small></a><a href="#cosmopolitan-frozen">Cosmopolitan Frozen <small>Frozen cocktail</small></a><a href="#crema-limone-frozen">Crema limone frozen <small>Dessert freddi</small></a><a href="#cranberry-lime-zero-alcol">Cranberry lime zero alcol <small>Cocktail analcolici</small></a><a href="#cuba-libre-frozen">Cuba Libre Frozen <small>Frozen cocktail</small></a><a href="#cynar-soda-frozen">Cynar Soda frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">D</h3><a href="#daiquiri-fragola">Daiquiri fragola <small>Frozen cocktail</small></a><a href="#disaronno-sour-frozen">Disaronno Sour frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">E</h3><a href="#espresso-martini-frozen">Espresso Martini Frozen <small>Frozen cocktail</small></a><a href="#estathe-pesca-limone">Estathé pesca limone <small>Ricette ignoranti</small></a><h3 class="alpha-letter">F</h3><a href="#finto-spritz">Finto Spritz <small>Cocktail analcolici</small></a><a href="#formula-base-frozen-cocktail">Formula base frozen cocktail <small>Regole base e consigli</small></a><a href="#formula-base-granita">Formula base granita <small>Regole base e consigli</small></a><a href="#frappe-al-caffe">Frappè al caffè <small>Frappè</small></a><a href="#frappe-al-cioccolato">Frappè al cioccolato <small>Frappè</small></a><a href="#frappe-alla-vaniglia">Frappè alla vaniglia <small>Frappè</small></a><a href="#frappe-banana">Frappè banana <small>Frappè</small></a><a href="#frappe-caramello">Frappè caramello <small>Frappè</small></a><a href="#frappe-cocco">Frappè cocco <small>Frappè</small></a><a href="#frappe-cocco-e-ananas">Frappè cocco e ananas <small>Frappè</small></a><a href="#frappe-fragola">Frappè fragola <small>Frappè</small></a><a href="#frappe-mango">Frappè mango <small>Frappè</small></a><a href="#frappe-nocciola">Frappè nocciola <small>Frappè</small></a><a href="#frappe-nocciola-e-caffe">Frappè nocciola e caffè <small>Frappè</small></a><a href="#frappe-nutella-leggero">Frappè Nutella leggero <small>Frappè</small></a><a href="#frappe-stracciatella">Frappè stracciatella <small>Frappè</small></a><a href="#frappe-yogurt-e-miele">Frappè yogurt e miele <small>Frappè</small></a><a href="#fragola-lime-soda">Fragola lime soda <small>Cocktail analcolici</small></a><a href="#frozen-yogurt-miele-e-noci">Frozen yogurt miele e noci <small>Dessert freddi</small></a><a href="#frutti-di-bosco">Frutti di bosco <small>Granite alla frutta</small></a><h3 class="alpha-letter">G</h3><a href="#gin-lemon-frozen">Gin Lemon Frozen <small>Frozen cocktail</small></a><a href="#ginger-lime-frozen">Ginger lime frozen <small>Cocktail analcolici</small></a><a href="#granita-al-caffe">Granita al caffè <small>Granite classiche</small></a><a href="#granita-al-chinotto">Granita al chinotto <small>Granite classiche</small></a><a href="#granita-al-limone">Granita al limone <small>Granite classiche</small></a><a href="#granita-al-pompelmo-rosa">Granita al pompelmo rosa <small>Granite classiche</small></a><a href="#granita-albicocca">Granita albicocca <small>Granite alla frutta</small></a><a href="#granita-all-arancia-rossa">Granita all'arancia rossa <small>Granite classiche</small></a><a href="#granita-alla-cedrata">Granita alla cedrata <small>Granite classiche</small></a><a href="#granita-alla-cola">Granita alla cola <small>Granite classiche</small></a><a href="#granita-alla-fragola">Granita alla fragola <small>Granite classiche</small></a><a href="#granita-alla-mandorla">Granita alla mandorla <small>Granite classiche</small></a><a href="#granita-alla-menta">Granita alla menta <small>Granite classiche</small></a><a href="#granita-banana-e-cacao">Granita banana e cacao <small>Granite alla frutta</small></a><a href="#granita-ciliegia">Granita ciliegia <small>Granite alla frutta</small></a><a href="#granita-cola-e-lime">Granita cola e lime <small>Granite classiche</small></a><a href="#granita-fichi-d-india">Granita fichi d'India <small>Granite alla frutta</small></a><a href="#granita-gassosa-e-limone">Granita gassosa e limone <small>Granite classiche</small></a><a href="#granita-latte-di-cocco-e-lime">Granita latte di cocco e lime <small>Granite classiche</small></a><a href="#granita-limone-e-basilico">Granita limone e basilico <small>Granite classiche</small></a><a href="#granita-limone-e-zenzero">Granita limone e zenzero <small>Granite classiche</small></a><a href="#granita-melagrana">Granita melagrana <small>Granite alla frutta</small></a><a href="#granita-mango-passion">Granita mango passion <small>Granite alla frutta</small></a><a href="#granita-menta-e-lime">Granita menta e lime <small>Granite classiche</small></a><a href="#granita-orzata">Granita orzata <small>Granite classiche</small></a><a href="#granita-passion-fruit">Granita passion fruit <small>Granite alla frutta</small></a><a href="#granita-pera-e-lime">Granita pera e lime <small>Granite alla frutta</small></a><a href="#granita-tamarindo">Granita tamarindo <small>Granite classiche</small></a><a href="#granita-uva-fragola">Granita uva fragola <small>Granite alla frutta</small></a><h3 class="alpha-letter">H</h3><a href="#hugo-frozen">Hugo Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">J</h3><a href="#jager-cola-frozen">Jäger Cola frozen <small>Amari e digestivi frozen</small></a><h3 class="alpha-letter">K</h3><a href="#kiwi">Kiwi <small>Granite alla frutta</small></a><h3 class="alpha-letter">L</h3><a href="#lampone">Lampone <small>Granite alla frutta</small></a><a href="#latte-macchiato-frozen">Latte macchiato frozen <small>Caffè e bevande fredde</small></a><a href="#limoncello-spritz-frozen">Limoncello Spritz Frozen <small>Frozen cocktail</small></a><a href="#limonata">Limonata <small>Bevande ghiacciate</small></a><a href="#limonata-alla-menta">Limonata alla menta <small>Cocktail analcolici</small></a><a href="#long-island-slush">Long Island Slush <small>Frozen cocktail</small></a><h3 class="alpha-letter">M</h3><a href="#mai-tai-frozen">Mai Tai Frozen <small>Frozen cocktail</small></a><a href="#mango">Mango <small>Granite alla frutta</small></a><a href="#margarita-frozen">Margarita Frozen <small>Frozen cocktail</small></a><a href="#margarita-piccante">Margarita piccante <small>Ricette ignoranti</small></a><a href="#matcha-latte-frozen">Matcha latte frozen <small>Caffè e bevande fredde</small></a><a href="#mela-verde">Mela verde <small>Granite alla frutta</small></a><a href="#mela-verde-ginger">Mela verde ginger <small>Cocktail analcolici</small></a><a href="#melone">Melone <small>Granite alla frutta</small></a><a href="#milkshake-banana-split">Milkshake banana split <small>Milkshake</small></a><a href="#milkshake-bounty">Milkshake Bounty <small>Milkshake</small></a><a href="#milkshake-burro-d-arachidi">Milkshake burro d'arachidi <small>Milkshake</small></a><a href="#milkshake-cheesecake-fragola">Milkshake cheesecake fragola <small>Milkshake</small></a><a href="#milkshake-cioccolato">Milkshake cioccolato <small>Milkshake</small></a><a href="#milkshake-ferrero-rocher">Milkshake Ferrero Rocher <small>Milkshake</small></a><a href="#milkshake-fragola">Milkshake fragola <small>Milkshake</small></a><a href="#milkshake-kinder">Milkshake Kinder <small>Milkshake</small></a><a href="#milkshake-mars">Milkshake Mars <small>Milkshake</small></a><a href="#milkshake-menta-cioccolato">Milkshake menta cioccolato <small>Milkshake</small></a><a href="#milkshake-mou-salato">Milkshake mou salato <small>Milkshake</small></a><a href="#milkshake-nutella">Milkshake Nutella <small>Milkshake</small></a><a href="#milkshake-oreo">Milkshake Oreo <small>Milkshake</small></a><a href="#milkshake-pistacchio">Milkshake pistacchio <small>Milkshake</small></a><a href="#milkshake-raffaello">Milkshake Raffaello <small>Milkshake</small></a><a href="#milkshake-snickers">Milkshake Snickers <small>Milkshake</small></a><a href="#milkshake-tiramisu">Milkshake tiramisù <small>Milkshake</small></a><a href="#milkshake-vaniglia">Milkshake vaniglia <small>Milkshake</small></a><a href="#mocha-frozen">Mocha frozen <small>Caffè e bevande fredde</small></a><a href="#mojito-frozen">Mojito Frozen <small>Frozen cocktail</small></a><a href="#mojito-passion-fruit">Mojito passion fruit <small>Ricette ignoranti</small></a><a href="#mojito-xxl-da-festa">Mojito XXL da festa <small>Ricette ignoranti</small></a><a href="#molinari-lemon-slush">Molinari Lemon Slush <small>Ricette ignoranti</small></a><a href="#monster-mango-frozen">Monster Mango frozen <small>Ricette ignoranti</small></a><a href="#montenegro-lemon-frozen">Montenegro Lemon frozen <small>Amari e digestivi frozen</small></a><a href="#moscow-mule-frozen">Moscow Mule Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">N</h3><a href="#negroni-frozen-leggero">Negroni Frozen leggero <small>Frozen cocktail</small></a><a href="#nutella-oreo-devastante">Nutella Oreo devastante <small>Ricette ignoranti</small></a><a href="#nutella-pistacchio-doppia-crema">Nutella pistacchio doppia crema <small>Ricette ignoranti</small></a><h3 class="alpha-letter">P</h3><a href="#paloma-frozen">Paloma Frozen <small>Frozen cocktail</small></a><a href="#panna-cotta-frozen">Panna cotta frozen <small>Dessert freddi</small></a><a href="#pera-e-cannella">Pera e cannella <small>Granite alla frutta</small></a><a href="#pesca">Pesca <small>Granite alla frutta</small></a><a href="#pesca-te-e-limone">Pesca tè e limone <small>Cocktail analcolici</small></a><a href="#pina-colada-frozen">Piña Colada Frozen <small>Frozen cocktail</small></a><a href="#pistacchio-criminale">Pistacchio criminale <small>Ricette ignoranti</small></a><a href="#pornstar-martini-frozen">Pornstar Martini Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">R</h3><a href="#ramazzotti-orange-frozen">Ramazzotti Orange frozen <small>Amari e digestivi frozen</small></a><a href="#red-bull-slush">Red Bull slush <small>Ricette ignoranti</small></a><a href="#ricotta-cacao-frozen">Ricotta cacao frozen <small>Dessert freddi</small></a><a href="#rossini-frozen">Rossini Frozen <small>Frozen cocktail</small></a><a href="#rum-punch-frozen">Rum Punch Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">S</h3><a href="#sambuca-caffe-frozen">Sambuca caffè frozen <small>Amari e digestivi frozen</small></a><a href="#sangria-frozen">Sangria Frozen <small>Frozen cocktail</small></a><a href="#sex-on-the-beach-frozen">Sex on the Beach Frozen <small>Frozen cocktail</small></a><a href="#shirley-temple-frozen">Shirley Temple Frozen <small>Cocktail analcolici</small></a><a href="#smoothie-ananas-banana">Smoothie ananas banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-ananas-menta">Smoothie ananas menta <small>Smoothie ghiacciati</small></a><a href="#smoothie-avena-banana">Smoothie avena banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-cacao-banana">Smoothie cacao banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-fragola-banana">Smoothie fragola banana <small>Smoothie ghiacciati</small></a><a href="#smoothie-fragola-cocco">Smoothie fragola cocco <small>Smoothie ghiacciati</small></a><a href="#smoothie-frutti-rossi-yogurt">Smoothie frutti rossi yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-mango-yogurt">Smoothie mango yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-mela-cannella">Smoothie mela cannella <small>Smoothie ghiacciati</small></a><a href="#smoothie-mela-kiwi">Smoothie mela kiwi <small>Smoothie ghiacciati</small></a><a href="#smoothie-pesca-yogurt">Smoothie pesca yogurt <small>Smoothie ghiacciati</small></a><a href="#smoothie-tropicale">Smoothie tropicale <small>Smoothie ghiacciati</small></a><a href="#sorbetto-limone-cremoso">Sorbetto limone cremoso <small>Dessert freddi</small></a><a href="#spritz-fragola">Spritz fragola <small>Ricette ignoranti</small></a><a href="#spritz-frozen">Spritz Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">T</h3><a href="#te-limone-frozen">Tè limone frozen <small>Caffè e bevande fredde</small></a><a href="#te-pesca-frozen">Tè pesca frozen <small>Caffè e bevande fredde</small></a><a href="#tiramisu-frozen-analcolico">Tiramisù frozen analcolico <small>Dessert freddi</small></a><a href="#tropical-zero">Tropical zero <small>Cocktail analcolici</small></a><h3 class="alpha-letter">V</h3><a href="#vecchia-romagna-cola-frozen">Vecchia Romagna Cola frozen <small>Amari e digestivi frozen</small></a><a href="#virgin-mojito">Virgin Mojito <small>Cocktail analcolici</small></a><a href="#vodka-lemon-frozen">Vodka Lemon Frozen <small>Frozen cocktail</small></a><h3 class="alpha-letter">Z</h3><a href="#zabaione-frozen">Zabaione frozen <small>Dessert freddi</small></a>
   </section>
 
   <section id="ricette">
     <h2 id="risultati">Risultati</h2>
-    
     <section class="category" id="regole-base-e-consigli" data-category="Regole base e consigli">
       <h2>Regole base e consigli</h2>
       
-        <article class="recipe" id="come-usare-bene-la-ninja-slushi" data-category="Regole base e consigli" data-name="come usare bene la ninja slushi" data-search="regole base e consigli come usare bene la ninja slushi guida · base generale liquido sempre freddo di frigorifero zucchero sufficiente: le bevande troppo light ghiacciano male ingredienti densi sempre frullati prima no pezzi interi, biscotti grossi o cucchiaiate di creme direttamente nella macchina non superare mai il livello max prepara sempre il composto fuori dalla macchina. frulla o sciogli bene zucchero, creme, cacao o frutta. raffredda in frigorifero almeno 2 ore quando possibile. versa nella slushi e scegli il programma più adatto. regola la consistenza solo dopo che la macchina ha iniziato a lavorare bene. la macchina non è un frullatore: è una macchina per ghiacciare e mantecare bevande.">
+        <article class="recipe" id="come-usare-bene-la-ninja-slushi" data-category="Regole base e consigli" data-name="come usare bene la ninja slushi" data-search="regole base e consigli come usare bene la ninja slushi guida · base generale liquido sempre freddo di frigorifero ingredienti densi frullati prima zucchero sufficiente no pezzi interi nella macchina non superare il livello max prepara sempre il composto fuori dalla macchina. frulla o sciogli bene creme, cacao, frutta e zucchero. raffredda il composto almeno 2 ore se puoi. versa nella slushi e scegli il programma adatto. la slushi non è un frullatore: è una macchina per ghiacciare e mantecare bevande.">
           <div class="recipe-top">
             <span class="badge">Regole base e consigli</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -193,17 +451,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="Liquido sempre freddo di frigorifero">Liquido sempre freddo di frigorifero</li><li data-original="Zucchero sufficiente: le bevande troppo light ghiacciano male">Zucchero sufficiente: le bevande troppo light ghiacciano male</li><li data-original="Ingredienti densi sempre frullati prima">Ingredienti densi sempre frullati prima</li><li data-original="No pezzi interi, biscotti grossi o cucchiaiate di creme direttamente nella macchina">No pezzi interi, biscotti grossi o cucchiaiate di creme direttamente nella macchina</li><li data-original="Non superare mai il livello MAX">Non superare mai il livello MAX</li></ul>
+              <ul><li data-original="Liquido sempre freddo di frigorifero">Liquido sempre freddo di frigorifero</li><li data-original="Ingredienti densi frullati prima">Ingredienti densi frullati prima</li><li data-original="Zucchero sufficiente">Zucchero sufficiente</li><li data-original="No pezzi interi nella macchina">No pezzi interi nella macchina</li><li data-original="Non superare il livello MAX">Non superare il livello MAX</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Prepara sempre il composto fuori dalla macchina.">Prepara sempre il composto fuori dalla macchina.</li><li data-original="Frulla o sciogli bene zucchero, creme, cacao o frutta.">Frulla o sciogli bene zucchero, creme, cacao o frutta.</li><li data-original="Raffredda in frigorifero almeno 2 ore quando possibile.">Raffredda in frigorifero almeno 2 ore quando possibile.</li><li data-original="Versa nella SLUSHi e scegli il programma più adatto.">Versa nella SLUSHi e scegli il programma più adatto.</li><li data-original="Regola la consistenza solo dopo che la macchina ha iniziato a lavorare bene.">Regola la consistenza solo dopo che la macchina ha iniziato a lavorare bene.</li></ol>
+              <ol><li data-original="Prepara sempre il composto fuori dalla macchina.">Prepara sempre il composto fuori dalla macchina.</li><li data-original="Frulla o sciogli bene creme, cacao, frutta e zucchero.">Frulla o sciogli bene creme, cacao, frutta e zucchero.</li><li data-original="Raffredda il composto almeno 2 ore se puoi.">Raffredda il composto almeno 2 ore se puoi.</li><li data-original="Versa nella SLUSHi e scegli il programma adatto.">Versa nella SLUSHi e scegli il programma adatto.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> La macchina non è un frullatore: è una macchina per ghiacciare e mantecare bevande.</p>
+          <p class="tip"><b>Consiglio:</b> La SLUSHi non è un frullatore: è una macchina per ghiacciare e mantecare bevande.</p>
         </article>
         
-        <article class="recipe" id="formula-base-granita" data-category="Regole base e consigli" data-name="formula base granita" data-search="regole base e consigli formula base granita formula · circa 1 litro 700 ml acqua o succo 150-220 ml succo/frutta concentrata 120-180 g zucchero sciogli lo zucchero nella parte liquida. aggiungi succo o frutta frullata. filtra se vuoi una granita liscia. raffredda bene e versa nella macchina. per frutta molto dolce riduci lo zucchero. per limone e agrumi stai più alto.">
+        <article class="recipe" id="formula-base-granita" data-category="Regole base e consigli" data-name="formula base granita" data-search="regole base e consigli formula base granita formula · circa 1 litro 700 ml acqua o succo 150-220 ml succo o frutta concentrata 120-180 g zucchero sciogli lo zucchero. aggiungi succo o frutta frullata. filtra se vuoi una granita liscia. raffredda e versa. per limone e agrumi serve più zucchero. per frutta dolce puoi scendere.">
           <div class="recipe-top">
             <span class="badge">Regole base e consigli</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -222,17 +480,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="700 ml acqua o succo">700 ml acqua o succo</li><li data-original="150-220 ml succo/frutta concentrata">150-220 ml succo/frutta concentrata</li><li data-original="120-180 g zucchero">120-180 g zucchero</li></ul>
+              <ul><li data-original="700 ml acqua o succo">700 ml acqua o succo</li><li data-original="150-220 ml succo o frutta concentrata">150-220 ml succo o frutta concentrata</li><li data-original="120-180 g zucchero">120-180 g zucchero</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sciogli lo zucchero nella parte liquida.">Sciogli lo zucchero nella parte liquida.</li><li data-original="Aggiungi succo o frutta frullata.">Aggiungi succo o frutta frullata.</li><li data-original="Filtra se vuoi una granita liscia.">Filtra se vuoi una granita liscia.</li><li data-original="Raffredda bene e versa nella macchina.">Raffredda bene e versa nella macchina.</li></ol>
+              <ol><li data-original="Sciogli lo zucchero.">Sciogli lo zucchero.</li><li data-original="Aggiungi succo o frutta frullata.">Aggiungi succo o frutta frullata.</li><li data-original="Filtra se vuoi una granita liscia.">Filtra se vuoi una granita liscia.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Per frutta molto dolce riduci lo zucchero. Per limone e agrumi stai più alto.</p>
+          <p class="tip"><b>Consiglio:</b> Per limone e agrumi serve più zucchero. Per frutta dolce puoi scendere.</p>
         </article>
         
-        <article class="recipe" id="formula-base-frozen-cocktail" data-category="Regole base e consigli" data-name="formula base frozen cocktail" data-search="regole base e consigli formula base frozen cocktail formula · circa 1 litro 250-350 ml alcolico principale 450-600 ml parte analcolica 80-150 g zucchero o sciroppo agrumi o aromi mescola tutto fuori dalla macchina. assaggia: da liquido deve sembrare leggermente più dolce del normale. raffredda bene. versa nella slushi. troppo alcol impedisce al composto di ghiacciare bene. meglio non fare il fenomeno: la fisica non vota alle elezioni.">
+        <article class="recipe" id="formula-base-frozen-cocktail" data-category="Regole base e consigli" data-name="formula base frozen cocktail" data-search="regole base e consigli formula base frozen cocktail formula · circa 1 litro 250-350 ml alcolico principale 450-600 ml parte analcolica 80-150 g zucchero o sciroppo agrumi o aromi mescola tutto fuori dalla macchina. assaggia: da liquido deve sembrare un po&#x27; più dolce. raffredda bene. versa nella slushi. troppo alcol impedisce di ghiacciare bene. la fisica, purtroppo, non si corrompe.">
           <div class="recipe-top">
             <span class="badge">Regole base e consigli</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -255,10 +513,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola tutto fuori dalla macchina.">Mescola tutto fuori dalla macchina.</li><li data-original="Assaggia: da liquido deve sembrare leggermente più dolce del normale.">Assaggia: da liquido deve sembrare leggermente più dolce del normale.</li><li data-original="Raffredda bene.">Raffredda bene.</li><li data-original="Versa nella SLUSHi.">Versa nella SLUSHi.</li></ol>
+              <ol><li data-original="Mescola tutto fuori dalla macchina.">Mescola tutto fuori dalla macchina.</li><li data-original="Assaggia: da liquido deve sembrare un po&#x27; più dolce.">Assaggia: da liquido deve sembrare un po&#x27; più dolce.</li><li data-original="Raffredda bene.">Raffredda bene.</li><li data-original="Versa nella SLUSHi.">Versa nella SLUSHi.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Troppo alcol impedisce al composto di ghiacciare bene. Meglio non fare il fenomeno: la fisica non vota alle elezioni.</p>
+          <p class="tip"><b>Consiglio:</b> Troppo alcol impedisce di ghiacciare bene. La fisica, purtroppo, non si corrompe.</p>
         </article>
         
     </section>
@@ -266,7 +524,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="granite-classiche" data-category="Granite classiche">
       <h2>Granite classiche</h2>
       
-        <article class="recipe" id="granita-al-limone" data-category="Granite classiche" data-name="granita al limone" data-search="granite classiche granita al limone ricetta · circa 1 litro 700 ml acqua 220 ml succo di limone 170 g zucchero scorza di limone non trattato facoltativa sciogli lo zucchero nell&#x27;acqua. aggiungi il succo di limone filtrato. lascia in infusione la scorza 20 minuti, poi rimuovila. raffredda e versa nella macchina. la regina. acidità alta, quindi non scendere troppo con lo zucchero.">
+        <article class="recipe" id="granita-al-limone" data-category="Granite classiche" data-name="granita al limone" data-search="granite classiche granita al limone ricetta · circa 1 litro 700 ml acqua 220 ml succo di limone 170 g zucchero scorza di limone facoltativa sciogli lo zucchero nell&#x27;acqua. aggiungi il succo filtrato. lascia la scorza 20 minuti e rimuovila. raffredda e versa. la regina. non scendere troppo con lo zucchero.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -285,17 +543,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="700 ml acqua">700 ml acqua</li><li data-original="220 ml succo di limone">220 ml succo di limone</li><li data-original="170 g zucchero">170 g zucchero</li><li data-original="Scorza di limone non trattato facoltativa">Scorza di limone non trattato facoltativa</li></ul>
+              <ul><li data-original="700 ml acqua">700 ml acqua</li><li data-original="220 ml succo di limone">220 ml succo di limone</li><li data-original="170 g zucchero">170 g zucchero</li><li data-original="Scorza di limone facoltativa">Scorza di limone facoltativa</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sciogli lo zucchero nell&#x27;acqua.">Sciogli lo zucchero nell&#x27;acqua.</li><li data-original="Aggiungi il succo di limone filtrato.">Aggiungi il succo di limone filtrato.</li><li data-original="Lascia in infusione la scorza 20 minuti, poi rimuovila.">Lascia in infusione la scorza 20 minuti, poi rimuovila.</li><li data-original="Raffredda e versa nella macchina.">Raffredda e versa nella macchina.</li></ol>
+              <ol><li data-original="Sciogli lo zucchero nell&#x27;acqua.">Sciogli lo zucchero nell&#x27;acqua.</li><li data-original="Aggiungi il succo filtrato.">Aggiungi il succo filtrato.</li><li data-original="Lascia la scorza 20 minuti e rimuovila.">Lascia la scorza 20 minuti e rimuovila.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> La regina. Acidità alta, quindi non scendere troppo con lo zucchero.</p>
+          <p class="tip"><b>Consiglio:</b> La regina. Non scendere troppo con lo zucchero.</p>
         </article>
         
-        <article class="recipe" id="granita-al-caffe" data-category="Granite classiche" data-name="granita al caffè" data-search="granite classiche granita al caffè ricetta · circa 1 litro 700 ml caffè freddo 250 ml acqua 130-160 g zucchero prepara caffè moka o espresso lungo. sciogli lo zucchero mentre è ancora tiepido. aggiungi acqua, raffredda bene. versa nella slushi. servila con panna montata. qui siamo in sicilia, non in un reparto dietetico.">
+        <article class="recipe" id="granita-al-caffe" data-category="Granite classiche" data-name="granita al caffè" data-search="granite classiche granita al caffè ricetta · circa 1 litro 700 ml caffè freddo 250 ml acqua 130-160 g zucchero prepara caffè forte. sciogli lo zucchero quando è tiepido. aggiungi acqua. raffredda e versa. con panna montata sopra è obbligatoria, non facoltativa.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -318,13 +576,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Prepara caffè moka o espresso lungo.">Prepara caffè moka o espresso lungo.</li><li data-original="Sciogli lo zucchero mentre è ancora tiepido.">Sciogli lo zucchero mentre è ancora tiepido.</li><li data-original="Aggiungi acqua, raffredda bene.">Aggiungi acqua, raffredda bene.</li><li data-original="Versa nella SLUSHi.">Versa nella SLUSHi.</li></ol>
+              <ol><li data-original="Prepara caffè forte.">Prepara caffè forte.</li><li data-original="Sciogli lo zucchero quando è tiepido.">Sciogli lo zucchero quando è tiepido.</li><li data-original="Aggiungi acqua.">Aggiungi acqua.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Servila con panna montata. Qui siamo in Sicilia, non in un reparto dietetico.</p>
+          <p class="tip"><b>Consiglio:</b> Con panna montata sopra è obbligatoria, non facoltativa.</p>
         </article>
         
-        <article class="recipe" id="granita-alla-mandorla" data-category="Granite classiche" data-name="granita alla mandorla" data-search="granite classiche granita alla mandorla ricetta · circa 1 litro 750 ml latte di mandorla zuccherato 150 ml acqua 30-60 g zucchero se serve mescola tutto. assaggia: deve essere ben dolce. raffredda e versa. con panna sopra è illegale in almeno tre regioni, ma moralmente giusta.">
+        <article class="recipe" id="granita-alla-mandorla" data-category="Granite classiche" data-name="granita alla mandorla" data-search="granite classiche granita alla mandorla ricetta · circa 1 litro 750 ml latte di mandorla zuccherato 150 ml acqua 30-60 g zucchero se serve mescola tutto. assaggia. raffredda e versa. con panna diventa una cosa seria.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -347,13 +605,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola tutto.">Mescola tutto.</li><li data-original="Assaggia: deve essere ben dolce.">Assaggia: deve essere ben dolce.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Mescola tutto.">Mescola tutto.</li><li data-original="Assaggia.">Assaggia.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Con panna sopra è illegale in almeno tre regioni, ma moralmente giusta.</p>
+          <p class="tip"><b>Consiglio:</b> Con panna diventa una cosa seria.</p>
         </article>
         
-        <article class="recipe" id="granita-alla-fragola" data-category="Granite classiche" data-name="granita alla fragola" data-search="granite classiche granita alla fragola ricetta · circa 1 litro 500 g fragole 350 ml acqua 120 g zucchero succo di 1/2 limone frulla fragole, zucchero, acqua e limone. filtra se vuoi una texture liscia. raffredda e versa. usa fragole mature, non quelle che sanno di cartone democratico-cristiano.">
+        <article class="recipe" id="granita-alla-fragola" data-category="Granite classiche" data-name="granita alla fragola" data-search="granite classiche granita alla fragola ricetta · circa 1 litro 500 g fragole 350 ml acqua 120 g zucchero succo di mezzo limone frulla tutto. filtra se vuoi. raffredda e versa. fragole mature, non quelle che sanno di cartone.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -372,17 +630,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="500 g fragole">500 g fragole</li><li data-original="350 ml acqua">350 ml acqua</li><li data-original="120 g zucchero">120 g zucchero</li><li data-original="Succo di 1/2 limone">Succo di 1/2 limone</li></ul>
+              <ul><li data-original="500 g fragole">500 g fragole</li><li data-original="350 ml acqua">350 ml acqua</li><li data-original="120 g zucchero">120 g zucchero</li><li data-original="Succo di mezzo limone">Succo di mezzo limone</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla fragole, zucchero, acqua e limone.">Frulla fragole, zucchero, acqua e limone.</li><li data-original="Filtra se vuoi una texture liscia.">Filtra se vuoi una texture liscia.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Usa fragole mature, non quelle che sanno di cartone democratico-cristiano.</p>
+          <p class="tip"><b>Consiglio:</b> Fragole mature, non quelle che sanno di cartone.</p>
         </article>
         
-        <article class="recipe" id="granita-alla-menta" data-category="Granite classiche" data-name="granita alla menta" data-search="granite classiche granita alla menta ricetta · circa 1 litro 800 ml acqua 160 ml sciroppo di menta 20 ml succo di limone mescola acqua, sciroppo e limone. raffredda. versa nella macchina. perfetta dopo cena o con caldo assassino.">
+        <article class="recipe" id="granita-alla-menta" data-category="Granite classiche" data-name="granita alla menta" data-search="granite classiche granita alla menta ricetta · circa 1 litro 800 ml acqua 160 ml sciroppo di menta 20 ml succo di limone mescola. raffredda. versa. freschissima.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -405,13 +663,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola acqua, sciroppo e limone.">Mescola acqua, sciroppo e limone.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa nella macchina.">Versa nella macchina.</li></ol>
+              <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Perfetta dopo cena o con caldo assassino.</p>
+          <p class="tip"><b>Consiglio:</b> Freschissima.</p>
         </article>
         
-        <article class="recipe" id="granita-all-arancia-rossa" data-category="Granite classiche" data-name="granita all&#x27;arancia rossa" data-search="granite classiche granita all&#x27;arancia rossa ricetta · circa 1 litro 750 ml succo d&#x27;arancia rossa 120 ml acqua 80-120 g zucchero filtra il succo. sciogli lo zucchero. raffredda e versa. se l&#x27;arancia è dolce, non esagerare.">
+        <article class="recipe" id="granita-all-arancia-rossa" data-category="Granite classiche" data-name="granita all&#x27;arancia rossa" data-search="granite classiche granita all&#x27;arancia rossa ricetta · circa 1 litro 750 ml succo arancia rossa 120 ml acqua 80-120 g zucchero filtra il succo. sciogli lo zucchero. raffredda e versa. se l&#x27;arancia è dolce, non esagerare.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -430,7 +688,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="750 ml succo d&#x27;arancia rossa">750 ml succo d&#x27;arancia rossa</li><li data-original="120 ml acqua">120 ml acqua</li><li data-original="80-120 g zucchero">80-120 g zucchero</li></ul>
+              <ul><li data-original="750 ml succo arancia rossa">750 ml succo arancia rossa</li><li data-original="120 ml acqua">120 ml acqua</li><li data-original="80-120 g zucchero">80-120 g zucchero</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
@@ -440,7 +698,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Se l&#x27;arancia è dolce, non esagerare.</p>
         </article>
         
-        <article class="recipe" id="granita-al-pompelmo-rosa" data-category="Granite classiche" data-name="granita al pompelmo rosa" data-search="granite classiche granita al pompelmo rosa ricetta · circa 1 litro 700 ml succo di pompelmo rosa 180 ml acqua 150 g zucchero mescola tutto. assaggia e correggi zucchero. raffredda e versa. amara e fresca: molto adulta.">
+        <article class="recipe" id="granita-al-pompelmo-rosa" data-category="Granite classiche" data-name="granita al pompelmo rosa" data-search="granite classiche granita al pompelmo rosa ricetta · circa 1 litro 700 ml succo pompelmo rosa 180 ml acqua 150 g zucchero mescola. assaggia. raffredda e versa. amara, fresca, adulta.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -459,17 +717,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="700 ml succo di pompelmo rosa">700 ml succo di pompelmo rosa</li><li data-original="180 ml acqua">180 ml acqua</li><li data-original="150 g zucchero">150 g zucchero</li></ul>
+              <ul><li data-original="700 ml succo pompelmo rosa">700 ml succo pompelmo rosa</li><li data-original="180 ml acqua">180 ml acqua</li><li data-original="150 g zucchero">150 g zucchero</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola tutto.">Mescola tutto.</li><li data-original="Assaggia e correggi zucchero.">Assaggia e correggi zucchero.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Mescola.">Mescola.</li><li data-original="Assaggia.">Assaggia.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Amara e fresca: molto adulta.</p>
+          <p class="tip"><b>Consiglio:</b> Amara, fresca, adulta.</p>
         </article>
         
-        <article class="recipe" id="granita-al-chinotto" data-category="Granite classiche" data-name="granita al chinotto" data-search="granite classiche granita al chinotto ricetta · circa 1 litro 900 ml chinotto freddo 40-80 g zucchero se serve sgasalo leggermente mescolando. aggiungi zucchero solo se necessario. versa nella macchina. viene benissimo se il chinotto è bello carico.">
+        <article class="recipe" id="granita-al-chinotto" data-category="Granite classiche" data-name="granita al chinotto" data-search="granite classiche granita al chinotto ricetta · circa 1 litro 900 ml chinotto freddo 40-80 g zucchero se serve sgasa leggermente. aggiungi zucchero se serve. versa. vintage ma fantastica.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -492,13 +750,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sgasalo leggermente mescolando.">Sgasalo leggermente mescolando.</li><li data-original="Aggiungi zucchero solo se necessario.">Aggiungi zucchero solo se necessario.</li><li data-original="Versa nella macchina.">Versa nella macchina.</li></ol>
+              <ol><li data-original="Sgasa leggermente.">Sgasa leggermente.</li><li data-original="Aggiungi zucchero se serve.">Aggiungi zucchero se serve.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Viene benissimo se il chinotto è bello carico.</p>
+          <p class="tip"><b>Consiglio:</b> Vintage ma fantastica.</p>
         </article>
         
-        <article class="recipe" id="granita-alla-cola" data-category="Granite classiche" data-name="granita alla cola" data-search="granite classiche granita alla cola ricetta · circa 1 litro 900 ml coca-cola o cola fredda apri e lascia perdere un po&#x27; di gas. versa nella macchina. semplice e assassina coi bambini/adulti rimasti bambini.">
+        <article class="recipe" id="granita-alla-cola" data-category="Granite classiche" data-name="granita alla cola" data-search="granite classiche granita alla cola ricetta · circa 1 litro 900 ml coca-cola fredda sgasa leggermente. versa nella macchina. semplice e sempre richiesta.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -517,17 +775,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="900 ml Coca-Cola o cola fredda">900 ml Coca-Cola o cola fredda</li></ul>
+              <ul><li data-original="900 ml Coca-Cola fredda">900 ml Coca-Cola fredda</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Apri e lascia perdere un po&#x27; di gas.">Apri e lascia perdere un po&#x27; di gas.</li><li data-original="Versa nella macchina.">Versa nella macchina.</li></ol>
+              <ol><li data-original="Sgasa leggermente.">Sgasa leggermente.</li><li data-original="Versa nella macchina.">Versa nella macchina.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Semplice e assassina coi bambini/adulti rimasti bambini.</p>
+          <p class="tip"><b>Consiglio:</b> Semplice e sempre richiesta.</p>
         </article>
         
-        <article class="recipe" id="granita-alla-cedrata" data-category="Granite classiche" data-name="granita alla cedrata" data-search="granite classiche granita alla cedrata ricetta · circa 1 litro 900 ml cedrata fredda sgasala leggermente. versa nella slushi. dolce, vintage, perfetta d&#x27;estate.">
+        <article class="recipe" id="granita-alla-cedrata" data-category="Granite classiche" data-name="granita alla cedrata" data-search="granite classiche granita alla cedrata ricetta · circa 1 litro 900 ml cedrata fredda sgasa leggermente. versa. dolce e spettacolare.">
           <div class="recipe-top">
             <span class="badge">Granite classiche</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -550,10 +808,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sgasala leggermente.">Sgasala leggermente.</li><li data-original="Versa nella SLUSHi.">Versa nella SLUSHi.</li></ol>
+              <ol><li data-original="Sgasa leggermente.">Sgasa leggermente.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Dolce, vintage, perfetta d&#x27;estate.</p>
+          <p class="tip"><b>Consiglio:</b> Dolce e spettacolare.</p>
         </article>
         
         <article class="recipe" id="granita-limone-e-basilico" data-category="Granite classiche" data-name="granita limone e basilico" data-search="granite classiche granita limone e basilico circa 1 litro 700 ml acqua 200 ml succo di limone 160 g zucchero 8-10 foglie di basilico sciogli lo zucchero nell&#x27;acqua. aggiungi il limone filtrato. lascia il basilico in infusione 15 minuti e poi filtra. raffredda e versa. elegante, fresca, molto meno banale del solito limone.">
@@ -793,7 +1051,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="granite-alla-frutta" data-category="Granite alla frutta">
       <h2>Granite alla frutta</h2>
       
-        <article class="recipe" id="anguria-e-lime" data-category="Granite alla frutta" data-name="anguria e lime" data-search="granite alla frutta anguria e lime ricetta · circa 1 litro 750 g anguria senza semi 80 ml succo lime 60-100 g zucchero frulla tutto. filtra se vuoi. raffredda e versa. ottima anche con menta frullata leggera.">
+        <article class="recipe" id="anguria-e-lime" data-category="Granite alla frutta" data-name="anguria e lime" data-search="granite alla frutta anguria e lime ricetta · circa 1 litro 750 g anguria senza semi 80 ml lime 60-100 g zucchero frulla. filtra se vuoi. raffredda e versa. ottima con menta.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -812,17 +1070,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="750 g anguria senza semi">750 g anguria senza semi</li><li data-original="80 ml succo lime">80 ml succo lime</li><li data-original="60-100 g zucchero">60-100 g zucchero</li></ul>
+              <ul><li data-original="750 g anguria senza semi">750 g anguria senza semi</li><li data-original="80 ml lime">80 ml lime</li><li data-original="60-100 g zucchero">60-100 g zucchero</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Ottima anche con menta frullata leggera.</p>
+          <p class="tip"><b>Consiglio:</b> Ottima con menta.</p>
         </article>
         
-        <article class="recipe" id="melone" data-category="Granite alla frutta" data-name="melone" data-search="granite alla frutta melone ricetta · circa 1 litro 600 g melone maturo 300 ml acqua 80 g zucchero succo di limone frulla. raffredda. versa. se il melone non profuma, lascia perdere: non fa miracoli.">
+        <article class="recipe" id="melone" data-category="Granite alla frutta" data-name="melone" data-search="granite alla frutta melone ricetta · circa 1 litro 600 g melone maturo 300 ml acqua 80 g zucchero limone frulla. raffredda. versa. se il melone non profuma, lascia stare.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -841,17 +1099,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="600 g melone maturo">600 g melone maturo</li><li data-original="300 ml acqua">300 ml acqua</li><li data-original="80 g zucchero">80 g zucchero</li><li data-original="Succo di limone">Succo di limone</li></ul>
+              <ul><li data-original="600 g melone maturo">600 g melone maturo</li><li data-original="300 ml acqua">300 ml acqua</li><li data-original="80 g zucchero">80 g zucchero</li><li data-original="Limone">Limone</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
               <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Se il melone non profuma, lascia perdere: non fa miracoli.</p>
+          <p class="tip"><b>Consiglio:</b> Se il melone non profuma, lascia stare.</p>
         </article>
         
-        <article class="recipe" id="pesca" data-category="Granite alla frutta" data-name="pesca" data-search="granite alla frutta pesca ricetta · circa 1 litro 550 g pesche mature 300 ml acqua 100 g zucchero limone sbuccia e frulla. filtra se vuoi. raffredda e versa. molto estiva.">
+        <article class="recipe" id="pesca" data-category="Granite alla frutta" data-name="pesca" data-search="granite alla frutta pesca ricetta · circa 1 litro 550 g pesche 300 ml acqua 100 g zucchero limone sbuccia. frulla. raffredda e versa. molto estiva.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -870,17 +1128,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="550 g pesche mature">550 g pesche mature</li><li data-original="300 ml acqua">300 ml acqua</li><li data-original="100 g zucchero">100 g zucchero</li><li data-original="Limone">Limone</li></ul>
+              <ul><li data-original="550 g pesche">550 g pesche</li><li data-original="300 ml acqua">300 ml acqua</li><li data-original="100 g zucchero">100 g zucchero</li><li data-original="Limone">Limone</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sbuccia e frulla.">Sbuccia e frulla.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Sbuccia.">Sbuccia.</li><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Molto estiva.</p>
         </article>
         
-        <article class="recipe" id="mango" data-category="Granite alla frutta" data-name="mango" data-search="granite alla frutta mango ricetta · circa 1 litro 500 g mango 350 ml acqua 100 g zucchero lime frulla benissimo. aggiungi acqua e lime. raffredda. cremosa di suo.">
+        <article class="recipe" id="mango" data-category="Granite alla frutta" data-name="mango" data-search="granite alla frutta mango ricetta · circa 1 litro 500 g mango 350 ml acqua 100 g zucchero lime frulla molto bene. raffredda. versa. cremosa.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -903,13 +1161,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla benissimo.">Frulla benissimo.</li><li data-original="Aggiungi acqua e lime.">Aggiungi acqua e lime.</li><li data-original="Raffredda.">Raffredda.</li></ol>
+              <ol><li data-original="Frulla molto bene.">Frulla molto bene.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Cremosa di suo.</p>
+          <p class="tip"><b>Consiglio:</b> Cremosa.</p>
         </article>
         
-        <article class="recipe" id="ananas" data-category="Granite alla frutta" data-name="ananas" data-search="granite alla frutta ananas ricetta · circa 1 litro 600 ml succo ananas 250 g ananas frullato 80 g zucchero frulla, mescola, raffredda. versa nella macchina. ottima anche come base cocktail.">
+        <article class="recipe" id="ananas" data-category="Granite alla frutta" data-name="ananas" data-search="granite alla frutta ananas ricetta · circa 1 litro 600 ml succo ananas 250 g ananas frullato 80 g zucchero frulla. mescola. raffredda. ottima anche con rum.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -932,13 +1190,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla, mescola, raffredda.">Frulla, mescola, raffredda.</li><li data-original="Versa nella macchina.">Versa nella macchina.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Ottima anche come base cocktail.</p>
+          <p class="tip"><b>Consiglio:</b> Ottima anche con rum.</p>
         </article>
         
-        <article class="recipe" id="frutti-di-bosco" data-category="Granite alla frutta" data-name="frutti di bosco" data-search="granite alla frutta frutti di bosco ricetta · circa 1 litro 450 g frutti di bosco 400 ml acqua 130 g zucchero limone frulla. filtra i semi. raffredda e versa. filtrare qui non è pigrizia: è civiltà.">
+        <article class="recipe" id="frutti-di-bosco" data-category="Granite alla frutta" data-name="frutti di bosco" data-search="granite alla frutta frutti di bosco ricetta · circa 1 litro 450 g frutti di bosco 400 ml acqua 130 g zucchero limone frulla. filtra i semi. raffredda e versa. filtrare qui è civiltà.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -964,7 +1222,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla.">Frulla.</li><li data-original="Filtra i semi.">Filtra i semi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Filtrare qui non è pigrizia: è civiltà.</p>
+          <p class="tip"><b>Consiglio:</b> Filtrare qui è civiltà.</p>
         </article>
         
         <article class="recipe" id="lampone" data-category="Granite alla frutta" data-name="lampone" data-search="granite alla frutta lampone ricetta · circa 1 litro 400 g lamponi 450 ml acqua 150 g zucchero frulla. filtra bene. raffredda. elegante e acidula.">
@@ -996,7 +1254,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Elegante e acidula.</p>
         </article>
         
-        <article class="recipe" id="kiwi" data-category="Granite alla frutta" data-name="kiwi" data-search="granite alla frutta kiwi ricetta · circa 1 litro 500 g kiwi 350 ml acqua 120 g zucchero limone frulla poco per non rompere troppo i semini. raffredda e versa. bella fresca, colore spettacolare.">
+        <article class="recipe" id="kiwi" data-category="Granite alla frutta" data-name="kiwi" data-search="granite alla frutta kiwi ricetta · circa 1 litro 500 g kiwi 350 ml acqua 120 g zucchero limone frulla poco. raffredda. versa. colore spettacolare.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1019,13 +1277,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla poco per non rompere troppo i semini.">Frulla poco per non rompere troppo i semini.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Frulla poco.">Frulla poco.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Bella fresca, colore spettacolare.</p>
+          <p class="tip"><b>Consiglio:</b> Colore spettacolare.</p>
         </article>
         
-        <article class="recipe" id="pera-e-cannella" data-category="Granite alla frutta" data-name="pera e cannella" data-search="granite alla frutta pera e cannella ricetta · circa 1 litro 600 ml succo pera 250 ml acqua 80 g zucchero cannella mescola. raffredda. versa. sorprendente, quasi dessert.">
+        <article class="recipe" id="pera-e-cannella" data-category="Granite alla frutta" data-name="pera e cannella" data-search="granite alla frutta pera e cannella ricetta · circa 1 litro 600 ml succo pera 250 ml acqua 80 g zucchero cannella mescola. raffredda. versa. quasi dessert.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1051,10 +1309,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Sorprendente, quasi dessert.</p>
+          <p class="tip"><b>Consiglio:</b> Quasi dessert.</p>
         </article>
         
-        <article class="recipe" id="mela-verde" data-category="Granite alla frutta" data-name="mela verde" data-search="granite alla frutta mela verde ricetta · circa 1 litro 700 ml succo mela verde 150 ml acqua 80 g zucchero limone mescola e raffredda. versa. fresca e pulita.">
+        <article class="recipe" id="mela-verde" data-category="Granite alla frutta" data-name="mela verde" data-search="granite alla frutta mela verde ricetta · circa 1 litro 700 ml succo mela verde 150 ml acqua 80 g zucchero limone mescola. raffredda. versa. pulita e fresca.">
           <div class="recipe-top">
             <span class="badge">Granite alla frutta</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1077,10 +1335,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola e raffredda.">Mescola e raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Fresca e pulita.</p>
+          <p class="tip"><b>Consiglio:</b> Pulita e fresca.</p>
         </article>
         
         <article class="recipe" id="granita-albicocca" data-category="Granite alla frutta" data-name="granita albicocca" data-search="granite alla frutta granita albicocca circa 1 litro 550 g albicocche mature 320 ml acqua 110 g zucchero succo di mezzo limone snocciola le albicocche. frulla con acqua, zucchero e limone. raffredda e versa. serve frutta matura, altrimenti sa di promessa non mantenuta.">
@@ -1349,7 +1607,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="frozen-cocktail" data-category="Frozen cocktail">
       <h2>Frozen cocktail</h2>
       
-        <article class="recipe" id="mojito-frozen" data-category="Frozen cocktail" data-name="mojito frozen" data-search="frozen cocktail mojito frozen ricetta · circa 1 litro 320 ml rum bianco 450 ml soda 120 ml succo lime 120-150 g zucchero menta pesta menta con zucchero e lime. aggiungi rum e soda. filtra se non vuoi foglie. raffredda e versa. il tuo cavallo di battaglia, ma più scenografico.">
+        <article class="recipe" id="mojito-frozen" data-category="Frozen cocktail" data-name="mojito frozen" data-search="frozen cocktail mojito frozen ricetta · circa 1 litro 320 ml rum bianco 450 ml soda 120 ml lime 120-150 g zucchero menta pesta menta, zucchero e lime. aggiungi rum e soda. filtra se vuoi. raffredda e versa. il cavallo di battaglia.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1368,17 +1626,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="320 ml rum bianco">320 ml rum bianco</li><li data-original="450 ml soda">450 ml soda</li><li data-original="120 ml succo lime">120 ml succo lime</li><li data-original="120-150 g zucchero">120-150 g zucchero</li><li data-original="Menta">Menta</li></ul>
+              <ul><li data-original="320 ml rum bianco">320 ml rum bianco</li><li data-original="450 ml soda">450 ml soda</li><li data-original="120 ml lime">120 ml lime</li><li data-original="120-150 g zucchero">120-150 g zucchero</li><li data-original="Menta">Menta</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Pesta menta con zucchero e lime.">Pesta menta con zucchero e lime.</li><li data-original="Aggiungi rum e soda.">Aggiungi rum e soda.</li><li data-original="Filtra se non vuoi foglie.">Filtra se non vuoi foglie.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Pesta menta, zucchero e lime.">Pesta menta, zucchero e lime.</li><li data-original="Aggiungi rum e soda.">Aggiungi rum e soda.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Il tuo cavallo di battaglia, ma più scenografico.</p>
+          <p class="tip"><b>Consiglio:</b> Il cavallo di battaglia.</p>
         </article>
         
-        <article class="recipe" id="spritz-frozen" data-category="Frozen cocktail" data-name="spritz frozen" data-search="frozen cocktail spritz frozen ricetta · circa 1 litro 350 ml aperol 300 ml prosecco 250 ml soda 50 ml succo arancia mescola senza agitare troppo. raffredda. versa. non usare prosecco costosissimo: qui deve lavorare, non fare il notaio.">
+        <article class="recipe" id="spritz-frozen" data-category="Frozen cocktail" data-name="spritz frozen" data-search="frozen cocktail spritz frozen ricetta · circa 1 litro 350 ml aperol 300 ml prosecco 250 ml soda 50 ml succo arancia mescola piano. raffredda. versa. non usare prosecco da notaio.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1401,13 +1659,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola senza agitare troppo.">Mescola senza agitare troppo.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Mescola piano.">Mescola piano.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Non usare prosecco costosissimo: qui deve lavorare, non fare il notaio.</p>
+          <p class="tip"><b>Consiglio:</b> Non usare prosecco da notaio.</p>
         </article>
         
-        <article class="recipe" id="margarita-frozen" data-category="Frozen cocktail" data-name="margarita frozen" data-search="frozen cocktail margarita frozen ricetta · circa 1 litro 300 ml tequila 140 ml triple sec 170 ml lime 300 ml acqua 120 g zucchero sciogli zucchero in acqua. aggiungi tequila, triple sec e lime. raffredda e versa. bordo bicchiere con sale obbligatorio.">
+        <article class="recipe" id="margarita-frozen" data-category="Frozen cocktail" data-name="margarita frozen" data-search="frozen cocktail margarita frozen ricetta · circa 1 litro 300 ml tequila 140 ml triple sec 170 ml lime 300 ml acqua 120 g zucchero sciogli zucchero in acqua. aggiungi alcol e lime. raffredda e versa. bordo bicchiere con sale.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1430,13 +1688,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sciogli zucchero in acqua.">Sciogli zucchero in acqua.</li><li data-original="Aggiungi tequila, triple sec e lime.">Aggiungi tequila, triple sec e lime.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Sciogli zucchero in acqua.">Sciogli zucchero in acqua.</li><li data-original="Aggiungi alcol e lime.">Aggiungi alcol e lime.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Bordo bicchiere con sale obbligatorio.</p>
+          <p class="tip"><b>Consiglio:</b> Bordo bicchiere con sale.</p>
         </article>
         
-        <article class="recipe" id="daiquiri-fragola" data-category="Frozen cocktail" data-name="daiquiri fragola" data-search="frozen cocktail daiquiri fragola ricetta · circa 1 litro 280 ml rum bianco 400 g fragole 130 ml lime 120 g zucchero 150 ml acqua frulla tutto. filtra se vuoi. raffredda e versa. sempre vincente.">
+        <article class="recipe" id="daiquiri-fragola" data-category="Frozen cocktail" data-name="daiquiri fragola" data-search="frozen cocktail daiquiri fragola ricetta · circa 1 litro 280 ml rum bianco 400 g fragole 130 ml lime 120 g zucchero 150 ml acqua frulla tutto. filtra se vuoi. raffredda. sempre vincente.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1459,13 +1717,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Sempre vincente.</p>
         </article>
         
-        <article class="recipe" id="pina-colada-frozen" data-category="Frozen cocktail" data-name="piña colada frozen" data-search="frozen cocktail piña colada frozen ricetta · circa 1 litro 280 ml rum 380 ml succo ananas 250 ml latte di cocco 80 g zucchero mescola/frulla. raffredda. versa. non usare crema di cocco troppo densa senza diluirla.">
+        <article class="recipe" id="pina-colada-frozen" data-category="Frozen cocktail" data-name="piña colada frozen" data-search="frozen cocktail piña colada frozen ricetta · circa 1 litro 280 ml rum 380 ml succo ananas 250 ml latte cocco 80 g zucchero mescola o frulla. raffredda. versa. se è troppo densa aggiungi acqua.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1484,17 +1742,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="280 ml rum">280 ml rum</li><li data-original="380 ml succo ananas">380 ml succo ananas</li><li data-original="250 ml latte di cocco">250 ml latte di cocco</li><li data-original="80 g zucchero">80 g zucchero</li></ul>
+              <ul><li data-original="280 ml rum">280 ml rum</li><li data-original="380 ml succo ananas">380 ml succo ananas</li><li data-original="250 ml latte cocco">250 ml latte cocco</li><li data-original="80 g zucchero">80 g zucchero</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola/frulla.">Mescola/frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Mescola o frulla.">Mescola o frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Non usare crema di cocco troppo densa senza diluirla.</p>
+          <p class="tip"><b>Consiglio:</b> Se è troppo densa aggiungi acqua.</p>
         </article>
         
-        <article class="recipe" id="sangria-frozen" data-category="Frozen cocktail" data-name="sangria frozen" data-search="frozen cocktail sangria frozen ricetta · circa 1 litro 650 ml vino rosso 120 ml brandy 180 ml succo arancia 80-120 g zucchero frutta a parte mescola liquidi e zucchero. raffredda. versa. aggiungi frutta nel bicchiere, non nella macchina. la frutta intera nella macchina no: non facciamo sabotaggio.">
+        <article class="recipe" id="sangria-frozen" data-category="Frozen cocktail" data-name="sangria frozen" data-search="frozen cocktail sangria frozen ricetta · circa 1 litro 650 ml vino rosso 120 ml brandy 180 ml succo arancia 80-120 g zucchero frutta a parte mescola liquidi. raffredda. versa. frutta solo nel bicchiere. non mettere pezzi di frutta nella macchina.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1517,13 +1775,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola liquidi e zucchero.">Mescola liquidi e zucchero.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li><li data-original="Aggiungi frutta nel bicchiere, non nella macchina.">Aggiungi frutta nel bicchiere, non nella macchina.</li></ol>
+              <ol><li data-original="Mescola liquidi.">Mescola liquidi.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li><li data-original="Frutta solo nel bicchiere.">Frutta solo nel bicchiere.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> La frutta intera nella macchina no: non facciamo sabotaggio.</p>
+          <p class="tip"><b>Consiglio:</b> Non mettere pezzi di frutta nella macchina.</p>
         </article>
         
-        <article class="recipe" id="negroni-frozen-leggero" data-category="Frozen cocktail" data-name="negroni frozen leggero" data-search="frozen cocktail negroni frozen leggero ricetta · circa 1 litro 250 ml gin 250 ml bitter 250 ml vermouth rosso 200 ml acqua 80 g zucchero mescola bene. raffredda molto. versa. forte. servire in bicchieri piccoli.">
+        <article class="recipe" id="negroni-frozen-leggero" data-category="Frozen cocktail" data-name="negroni frozen leggero" data-search="frozen cocktail negroni frozen leggero ricetta · circa 1 litro 250 ml gin 250 ml bitter 250 ml vermouth rosso 200 ml acqua 80 g zucchero mescola. raffredda molto. versa. forte: bicchieri piccoli.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1546,13 +1804,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola bene.">Mescola bene.</li><li data-original="Raffredda molto.">Raffredda molto.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda molto.">Raffredda molto.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Forte. Servire in bicchieri piccoli.</p>
+          <p class="tip"><b>Consiglio:</b> Forte: bicchieri piccoli.</p>
         </article>
         
-        <article class="recipe" id="vodka-lemon-frozen" data-category="Frozen cocktail" data-name="vodka lemon frozen" data-search="frozen cocktail vodka lemon frozen ricetta · circa 1 litro 300 ml vodka 650 ml lemon soda 40 ml succo limone sgasa leggermente la lemon soda. mescola vodka e limone. versa. facile da festa.">
+        <article class="recipe" id="vodka-lemon-frozen" data-category="Frozen cocktail" data-name="vodka lemon frozen" data-search="frozen cocktail vodka lemon frozen ricetta · circa 1 litro 300 ml vodka 650 ml lemon soda 40 ml limone sgasa leggermente. mescola. versa. facile da festa.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1571,17 +1829,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="300 ml vodka">300 ml vodka</li><li data-original="650 ml lemon soda">650 ml lemon soda</li><li data-original="40 ml succo limone">40 ml succo limone</li></ul>
+              <ul><li data-original="300 ml vodka">300 ml vodka</li><li data-original="650 ml lemon soda">650 ml lemon soda</li><li data-original="40 ml limone">40 ml limone</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sgasa leggermente la lemon soda.">Sgasa leggermente la lemon soda.</li><li data-original="Mescola vodka e limone.">Mescola vodka e limone.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Sgasa leggermente.">Sgasa leggermente.</li><li data-original="Mescola.">Mescola.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Facile da festa.</p>
         </article>
         
-        <article class="recipe" id="gin-lemon-frozen" data-category="Frozen cocktail" data-name="gin lemon frozen" data-search="frozen cocktail gin lemon frozen ricetta · circa 1 litro 300 ml gin 600 ml lemon soda 80 ml succo limone mescola e raffredda. versa. occhio: scende come bibita, poi presenta il conto.">
+        <article class="recipe" id="gin-lemon-frozen" data-category="Frozen cocktail" data-name="gin lemon frozen" data-search="frozen cocktail gin lemon frozen ricetta · circa 1 litro 300 ml gin 600 ml lemon soda 80 ml limone mescola. raffredda. versa. scende facile, poi presenta il conto.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1600,17 +1858,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="300 ml gin">300 ml gin</li><li data-original="600 ml lemon soda">600 ml lemon soda</li><li data-original="80 ml succo limone">80 ml succo limone</li></ul>
+              <ul><li data-original="300 ml gin">300 ml gin</li><li data-original="600 ml lemon soda">600 ml lemon soda</li><li data-original="80 ml limone">80 ml limone</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Mescola e raffredda.">Mescola e raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Occhio: scende come bibita, poi presenta il conto.</p>
+          <p class="tip"><b>Consiglio:</b> Scende facile, poi presenta il conto.</p>
         </article>
         
-        <article class="recipe" id="caipiroska-fragola" data-category="Frozen cocktail" data-name="caipiroska fragola" data-search="frozen cocktail caipiroska fragola ricetta · circa 1 litro 300 ml vodka 450 g fragole 120 ml lime 120 g zucchero 150 ml acqua frulla tutto. raffredda. versa. molto estiva.">
+        <article class="recipe" id="caipiroska-fragola" data-category="Frozen cocktail" data-name="caipiroska fragola" data-search="frozen cocktail caipiroska fragola ricetta · circa 1 litro 300 ml vodka 450 g fragole 120 ml lime 120 g zucchero 150 ml acqua frulla. raffredda. versa. molto estiva.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1633,13 +1891,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Molto estiva.</p>
         </article>
         
-        <article class="recipe" id="moscow-mule-frozen" data-category="Frozen cocktail" data-name="moscow mule frozen" data-search="frozen cocktail moscow mule frozen ricetta · circa 1 litro 300 ml vodka 550 ml ginger beer 100 ml lime 60 g zucchero sgasa un po&#x27; la ginger beer. mescola. raffredda e versa. zenzero e lime lo rendono freschissimo.">
+        <article class="recipe" id="moscow-mule-frozen" data-category="Frozen cocktail" data-name="moscow mule frozen" data-search="frozen cocktail moscow mule frozen ricetta · circa 1 litro 300 ml vodka 550 ml ginger beer 100 ml lime 60 g zucchero sgasa un po&#x27;. mescola. raffredda e versa. zenzero e lime, freschissimo.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1662,13 +1920,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sgasa un po&#x27; la ginger beer.">Sgasa un po&#x27; la ginger beer.</li><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
+              <ol><li data-original="Sgasa un po&#x27;.">Sgasa un po&#x27;.</li><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Zenzero e lime lo rendono freschissimo.</p>
+          <p class="tip"><b>Consiglio:</b> Zenzero e lime, freschissimo.</p>
         </article>
         
-        <article class="recipe" id="paloma-frozen" data-category="Frozen cocktail" data-name="paloma frozen" data-search="frozen cocktail paloma frozen ricetta · circa 1 litro 300 ml tequila 550 ml soda pompelmo 80 ml lime 60 g zucchero mescola. raffredda. versa. meno banale del solito spritz.">
+        <article class="recipe" id="paloma-frozen" data-category="Frozen cocktail" data-name="paloma frozen" data-search="frozen cocktail paloma frozen ricetta · circa 1 litro 300 ml tequila 550 ml soda pompelmo 80 ml lime 60 g zucchero mescola. raffredda. versa. meno banale dello spritz.">
           <div class="recipe-top">
             <span class="badge">Frozen cocktail</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -1694,7 +1952,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Meno banale del solito spritz.</p>
+          <p class="tip"><b>Consiglio:</b> Meno banale dello Spritz.</p>
         </article>
         
         <article class="recipe" id="espresso-martini-frozen" data-category="Frozen cocktail" data-name="espresso martini frozen" data-search="frozen cocktail espresso martini frozen circa 1 litro 300 ml vodka 250 ml caffè forte 180 ml liquore al caffè 220 ml acqua 80 g zucchero sciogli lo zucchero nel caffè. aggiungi vodka, liquore e acqua. raffredda molto bene e versa. serale, elegante, pericoloso.">
@@ -2137,7 +2395,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="cocktail-analcolici" data-category="Cocktail analcolici">
       <h2>Cocktail analcolici</h2>
       
-        <article class="recipe" id="virgin-mojito" data-category="Cocktail analcolici" data-name="virgin mojito" data-search="cocktail analcolici virgin mojito ricetta · circa 1 litro 700 ml soda 150 ml lime 130 g zucchero menta pesta menta, zucchero e lime. aggiungi soda. filtra e versa. zero alcol, massima freschezza.">
+        <article class="recipe" id="virgin-mojito" data-category="Cocktail analcolici" data-name="virgin mojito" data-search="cocktail analcolici virgin mojito ricetta · circa 1 litro 700 ml soda 150 ml lime 130 g zucchero menta pesta menta, zucchero e lime. aggiungi soda. filtra. versa. zero alcol, massima freschezza.">
           <div class="recipe-top">
             <span class="badge">Cocktail analcolici</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2160,7 +2418,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Pesta menta, zucchero e lime.">Pesta menta, zucchero e lime.</li><li data-original="Aggiungi soda.">Aggiungi soda.</li><li data-original="Filtra e versa.">Filtra e versa.</li></ol>
+              <ol><li data-original="Pesta menta, zucchero e lime.">Pesta menta, zucchero e lime.</li><li data-original="Aggiungi soda.">Aggiungi soda.</li><li data-original="Filtra.">Filtra.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Zero alcol, massima freschezza.</p>
@@ -2548,7 +2806,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="frappe" data-category="Frappè">
       <h2>Frappè</h2>
       
-        <article class="recipe" id="frappe-al-caffe" data-category="Frappè" data-name="frappè al caffè" data-search="frappè frappè al caffè ricetta · circa 1 litro 450 ml latte intero 250 ml caffè 80 g zucchero 100 ml panna facoltativa sciogli zucchero nel caffè. aggiungi latte. raffredda e versa. più leggero del milkshake, ma comunque serio.">
+        <article class="recipe" id="frappe-al-caffe" data-category="Frappè" data-name="frappè al caffè" data-search="frappè frappè al caffè ricetta · circa 1 litro 450 ml latte 250 ml caffè 80 g zucchero 100 ml panna facoltativa sciogli zucchero nel caffè. aggiungi latte. raffredda e versa. leggero ma serio.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2567,17 +2825,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <div class="cols">
             <section>
               <h4>Ingredienti</h4>
-              <ul><li data-original="450 ml latte intero">450 ml latte intero</li><li data-original="250 ml caffè">250 ml caffè</li><li data-original="80 g zucchero">80 g zucchero</li><li data-original="100 ml panna facoltativa">100 ml panna facoltativa</li></ul>
+              <ul><li data-original="450 ml latte">450 ml latte</li><li data-original="250 ml caffè">250 ml caffè</li><li data-original="80 g zucchero">80 g zucchero</li><li data-original="100 ml panna facoltativa">100 ml panna facoltativa</li></ul>
             </section>
             <section>
               <h4>Procedura</h4>
               <ol><li data-original="Sciogli zucchero nel caffè.">Sciogli zucchero nel caffè.</li><li data-original="Aggiungi latte.">Aggiungi latte.</li><li data-original="Raffredda e versa.">Raffredda e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Più leggero del milkshake, ma comunque serio.</p>
+          <p class="tip"><b>Consiglio:</b> Leggero ma serio.</p>
         </article>
         
-        <article class="recipe" id="frappe-al-cioccolato" data-category="Frappè" data-name="frappè al cioccolato" data-search="frappè frappè al cioccolato ricetta · circa 1 litro 650 ml latte 35 g cacao 100 g zucchero sciogli cacao e zucchero con poco latte caldo. aggiungi latte freddo. raffredda. il cacao va sciolto prima, altrimenti fa grumi vigliacchi.">
+        <article class="recipe" id="frappe-al-cioccolato" data-category="Frappè" data-name="frappè al cioccolato" data-search="frappè frappè al cioccolato ricetta · circa 1 litro 650 ml latte 35 g cacao 100 g zucchero sciogli cacao e zucchero con poco latte caldo. aggiungi latte freddo. raffredda. il cacao va sciolto prima.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2603,10 +2861,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Sciogli cacao e zucchero con poco latte caldo.">Sciogli cacao e zucchero con poco latte caldo.</li><li data-original="Aggiungi latte freddo.">Aggiungi latte freddo.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Il cacao va sciolto prima, altrimenti fa grumi vigliacchi.</p>
+          <p class="tip"><b>Consiglio:</b> Il cacao va sciolto prima.</p>
         </article>
         
-        <article class="recipe" id="frappe-alla-vaniglia" data-category="Frappè" data-name="frappè alla vaniglia" data-search="frappè frappè alla vaniglia ricetta · circa 1 litro 750 ml latte 100 ml panna 90 g zucchero vaniglia mescola tutto. raffredda. versa. semplice e buono.">
+        <article class="recipe" id="frappe-alla-vaniglia" data-category="Frappè" data-name="frappè alla vaniglia" data-search="frappè frappè alla vaniglia ricetta · circa 1 litro 750 ml latte 100 ml panna 90 g zucchero vaniglia mescola tutto. raffredda. versa. semplice.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2632,10 +2890,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Mescola tutto.">Mescola tutto.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Semplice e buono.</p>
+          <p class="tip"><b>Consiglio:</b> Semplice.</p>
         </article>
         
-        <article class="recipe" id="frappe-banana" data-category="Frappè" data-name="frappè banana" data-search="frappè frappè banana ricetta · circa 1 litro 650 ml latte 2 banane mature 50 g zucchero o miele frulla tutto molto bene. raffredda. versa. banane mature, non verdi.">
+        <article class="recipe" id="frappe-banana" data-category="Frappè" data-name="frappè banana" data-search="frappè frappè banana ricetta · circa 1 litro 650 ml latte 2 banane mature 50 g zucchero o miele frulla. raffredda. versa. banane mature.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2658,10 +2916,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla tutto molto bene.">Frulla tutto molto bene.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Banane mature, non verdi.</p>
+          <p class="tip"><b>Consiglio:</b> Banane mature.</p>
         </article>
         
         <article class="recipe" id="frappe-fragola" data-category="Frappè" data-name="frappè fragola" data-search="frappè frappè fragola ricetta · circa 1 litro 600 ml latte 300 g fragole 80 g zucchero frulla. filtra se vuoi. raffredda. classico.">
@@ -2722,7 +2980,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Cremoso.</p>
         </article>
         
-        <article class="recipe" id="frappe-cocco" data-category="Frappè" data-name="frappè cocco" data-search="frappè frappè cocco ricetta · circa 1 litro 500 ml latte 250 ml latte cocco 80 g zucchero mescola. raffredda. versa. aggiungi cacao sopra nel bicchiere.">
+        <article class="recipe" id="frappe-cocco" data-category="Frappè" data-name="frappè cocco" data-search="frappè frappè cocco ricetta · circa 1 litro 500 ml latte 250 ml latte cocco 80 g zucchero mescola. raffredda. versa. cacao sopra nel bicchiere.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2748,10 +3006,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Mescola.">Mescola.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Aggiungi cacao sopra nel bicchiere.</p>
+          <p class="tip"><b>Consiglio:</b> Cacao sopra nel bicchiere.</p>
         </article>
         
-        <article class="recipe" id="frappe-nocciola" data-category="Frappè" data-name="frappè nocciola" data-search="frappè frappè nocciola ricetta · circa 1 litro 700 ml latte 120 g crema nocciola fluida 30 g zucchero scalda leggermente la crema. frulla col latte. raffredda. non buttare crema densa direttamente nella macchina.">
+        <article class="recipe" id="frappe-nocciola" data-category="Frappè" data-name="frappè nocciola" data-search="frappè frappè nocciola ricetta · circa 1 litro 700 ml latte 120 g crema nocciola fluida 30 g zucchero scalda leggermente la crema. frulla col latte. raffredda. crema densa mai direttamente dentro.">
           <div class="recipe-top">
             <span class="badge">Frappè</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -2777,7 +3035,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Scalda leggermente la crema.">Scalda leggermente la crema.</li><li data-original="Frulla col latte.">Frulla col latte.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Non buttare crema densa direttamente nella macchina.</p>
+          <p class="tip"><b>Consiglio:</b> Crema densa mai direttamente dentro.</p>
         </article>
         
         <article class="recipe" id="frappe-nutella-leggero" data-category="Frappè" data-name="frappè nutella leggero" data-search="frappè frappè nutella leggero circa 1 litro 750 ml latte 120 g nutella 40 g zucchero se serve scalda leggermente la nutella. frulla col latte. raffredda e versa. meno pesante del milkshake nutella.">
@@ -2988,7 +3246,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Porcheria sublime.</p>
         </article>
         
-        <article class="recipe" id="milkshake-oreo" data-category="Milkshake" data-name="milkshake oreo" data-search="milkshake milkshake oreo ricetta · circa 1 litro 650 ml latte 8 oreo 2 palline gelato vaniglia frulla benissimo. raffredda. versa. gli oreo devono essere polverizzati, non sassolini.">
+        <article class="recipe" id="milkshake-oreo" data-category="Milkshake" data-name="milkshake oreo" data-search="milkshake milkshake oreo ricetta · circa 1 litro 650 ml latte 8 oreo 2 palline gelato vaniglia frulla benissimo. raffredda. versa. gli oreo devono essere polverizzati.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3014,10 +3272,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla benissimo.">Frulla benissimo.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Gli Oreo devono essere polverizzati, non sassolini.</p>
+          <p class="tip"><b>Consiglio:</b> Gli Oreo devono essere polverizzati.</p>
         </article>
         
-        <article class="recipe" id="milkshake-vaniglia" data-category="Milkshake" data-name="milkshake vaniglia" data-search="milkshake milkshake vaniglia ricetta · circa 1 litro 600 ml latte 250 g gelato vaniglia 100 ml panna frulla tutto. versa. base perfetta per varianti.">
+        <article class="recipe" id="milkshake-vaniglia" data-category="Milkshake" data-name="milkshake vaniglia" data-search="milkshake milkshake vaniglia ricetta · circa 1 litro 600 ml latte 250 g gelato vaniglia 100 ml panna frulla tutto. versa. base perfetta.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3043,10 +3301,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Base perfetta per varianti.</p>
+          <p class="tip"><b>Consiglio:</b> Base perfetta.</p>
         </article>
         
-        <article class="recipe" id="milkshake-cioccolato" data-category="Milkshake" data-name="milkshake cioccolato" data-search="milkshake milkshake cioccolato ricetta · circa 1 litro 600 ml latte 250 g gelato cioccolato 20 g cacao frulla. raffredda. versa. aggiungi topping solo nel bicchiere.">
+        <article class="recipe" id="milkshake-cioccolato" data-category="Milkshake" data-name="milkshake cioccolato" data-search="milkshake milkshake cioccolato ricetta · circa 1 litro 600 ml latte 250 g gelato cioccolato 20 g cacao frulla. raffredda. versa. topping solo nel bicchiere.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3072,7 +3330,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Aggiungi topping solo nel bicchiere.</p>
+          <p class="tip"><b>Consiglio:</b> Topping solo nel bicchiere.</p>
         </article>
         
         <article class="recipe" id="milkshake-fragola" data-category="Milkshake" data-name="milkshake fragola" data-search="milkshake milkshake fragola ricetta · circa 1 litro 550 ml latte 250 g gelato vaniglia 250 g fragole frulla bene. raffredda. versa. più gelato = più cremoso.">
@@ -3104,7 +3362,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Più gelato = più cremoso.</p>
         </article>
         
-        <article class="recipe" id="milkshake-banana-split" data-category="Milkshake" data-name="milkshake banana split" data-search="milkshake milkshake banana split ricetta · circa 1 litro 600 ml latte 2 banane 200 g gelato vaniglia sciroppo cioccolato frulla banana, latte e gelato. versa. sciroppo nel bicchiere. da servire con panna.">
+        <article class="recipe" id="milkshake-banana-split" data-category="Milkshake" data-name="milkshake banana split" data-search="milkshake milkshake banana split ricetta · circa 1 litro 600 ml latte 2 banane 200 g gelato vaniglia sciroppo cioccolato frulla banana, latte e gelato. versa. sciroppo nel bicchiere. con panna.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3130,10 +3388,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla banana, latte e gelato.">Frulla banana, latte e gelato.</li><li data-original="Versa.">Versa.</li><li data-original="Sciroppo nel bicchiere.">Sciroppo nel bicchiere.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Da servire con panna.</p>
+          <p class="tip"><b>Consiglio:</b> Con panna.</p>
         </article>
         
-        <article class="recipe" id="milkshake-bounty" data-category="Milkshake" data-name="milkshake bounty" data-search="milkshake milkshake bounty ricetta · circa 1 litro 600 ml latte 200 ml latte cocco 120 g crema cioccolato cocco rapè fine frulla molto bene. raffredda. versa. cocco rapè solo se finissimo.">
+        <article class="recipe" id="milkshake-bounty" data-category="Milkshake" data-name="milkshake bounty" data-search="milkshake milkshake bounty ricetta · circa 1 litro 600 ml latte 200 ml latte cocco 120 g crema cioccolato cocco rapè fine frulla molto bene. raffredda. versa. cocco solo se finissimo.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3159,10 +3417,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla molto bene.">Frulla molto bene.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Cocco rapè solo se finissimo.</p>
+          <p class="tip"><b>Consiglio:</b> Cocco solo se finissimo.</p>
         </article>
         
-        <article class="recipe" id="milkshake-kinder" data-category="Milkshake" data-name="milkshake kinder" data-search="milkshake milkshake kinder ricetta · circa 1 litro 650 ml latte 120 g barrette kinder sciolte 100 ml panna sciogli le barrette a bagnomaria o microonde dolce. frulla col latte. raffredda. altamente scorretto. quindi giusto.">
+        <article class="recipe" id="milkshake-kinder" data-category="Milkshake" data-name="milkshake kinder" data-search="milkshake milkshake kinder ricetta · circa 1 litro 650 ml latte 120 g barrette kinder sciolte 100 ml panna sciogli le barrette. frulla col latte. raffredda. altamente scorretto.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3185,13 +3443,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sciogli le barrette a bagnomaria o microonde dolce.">Sciogli le barrette a bagnomaria o microonde dolce.</li><li data-original="Frulla col latte.">Frulla col latte.</li><li data-original="Raffredda.">Raffredda.</li></ol>
+              <ol><li data-original="Sciogli le barrette.">Sciogli le barrette.</li><li data-original="Frulla col latte.">Frulla col latte.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Altamente scorretto. Quindi giusto.</p>
+          <p class="tip"><b>Consiglio:</b> Altamente scorretto.</p>
         </article>
         
-        <article class="recipe" id="milkshake-pistacchio" data-category="Milkshake" data-name="milkshake pistacchio" data-search="milkshake milkshake pistacchio ricetta · circa 1 litro 650 ml latte 150 g crema pistacchio 100 ml panna frulla tutto. raffredda. versa. usa crema pistacchio vera, non zucchero verde.">
+        <article class="recipe" id="milkshake-pistacchio" data-category="Milkshake" data-name="milkshake pistacchio" data-search="milkshake milkshake pistacchio ricetta · circa 1 litro 650 ml latte 150 g crema pistacchio 100 ml panna frulla. raffredda. versa. crema pistacchio vera.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3214,13 +3472,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla tutto.">Frulla tutto.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Usa crema pistacchio vera, non zucchero verde.</p>
+          <p class="tip"><b>Consiglio:</b> Crema pistacchio vera.</p>
         </article>
         
-        <article class="recipe" id="milkshake-tiramisu" data-category="Milkshake" data-name="milkshake tiramisù" data-search="milkshake milkshake tiramisù ricetta · circa 1 litro 500 ml latte 200 ml caffè 150 g mascarpone 80 g zucchero cacao frulla latte, caffè, mascarpone e zucchero. raffredda. cacao nel bicchiere. molto denso: se serve aggiungi latte.">
+        <article class="recipe" id="milkshake-tiramisu" data-category="Milkshake" data-name="milkshake tiramisù" data-search="milkshake milkshake tiramisù ricetta · circa 1 litro 500 ml latte 200 ml caffè 150 g mascarpone 80 g zucchero cacao frulla tutto tranne cacao. raffredda. cacao nel bicchiere. se è troppo denso aggiungi latte.">
           <div class="recipe-top">
             <span class="badge">Milkshake</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3243,10 +3501,10 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla latte, caffè, mascarpone e zucchero.">Frulla latte, caffè, mascarpone e zucchero.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Cacao nel bicchiere.">Cacao nel bicchiere.</li></ol>
+              <ol><li data-original="Frulla tutto tranne cacao.">Frulla tutto tranne cacao.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Cacao nel bicchiere.">Cacao nel bicchiere.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Molto denso: se serve aggiungi latte.</p>
+          <p class="tip"><b>Consiglio:</b> Se è troppo denso aggiungi latte.</p>
         </article>
         
         <article class="recipe" id="milkshake-snickers" data-category="Milkshake" data-name="milkshake snickers" data-search="milkshake milkshake snickers circa 1 litro 650 ml latte 2 barrette snickers 100 ml panna gelato vaniglia facoltativo sciogli o frulla molto bene le barrette. filtra se restano pezzi grossi. raffredda e versa. pezzi grossi solo come topping fuori.">
@@ -3544,7 +3802,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Dolce e leggero.</p>
         </article>
         
-        <article class="recipe" id="caffe-shakerato-slush" data-category="Caffè e bevande fredde" data-name="caffè shakerato slush" data-search="caffè e bevande fredde caffè shakerato slush ricetta · circa 1 litro 750 ml caffè 150 ml acqua 150 g zucchero mescola a caldo. raffredda. versa. più intenso della granita classica.">
+        <article class="recipe" id="caffe-shakerato-slush" data-category="Caffè e bevande fredde" data-name="caffè shakerato slush" data-search="caffè e bevande fredde caffè shakerato slush ricetta · circa 1 litro 750 ml caffè 150 ml acqua 150 g zucchero mescola a caldo. raffredda. versa. più intenso della granita.">
           <div class="recipe-top">
             <span class="badge">Caffè e bevande fredde</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3570,7 +3828,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Mescola a caldo.">Mescola a caldo.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Più intenso della granita classica.</p>
+          <p class="tip"><b>Consiglio:</b> Più intenso della granita.</p>
         </article>
         
         <article class="recipe" id="te-limone-frozen" data-category="Caffè e bevande fredde" data-name="tè limone frozen" data-search="caffè e bevande fredde tè limone frozen ricetta · circa 1 litro 900 ml tè limone zuccherato versa freddo. avvia. facile.">
@@ -3897,7 +4155,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Aggiungi acqua se troppo denso.</p>
         </article>
         
-        <article class="recipe" id="smoothie-frutti-rossi-yogurt" data-category="Smoothie ghiacciati" data-name="smoothie frutti rossi yogurt" data-search="smoothie ghiacciati smoothie frutti rossi yogurt ricetta · circa 1 litro 350 g frutti rossi 400 ml latte 200 g yogurt 80 g zucchero frulla bene. filtra se vuoi. raffredda. non esagerare con yogurt denso.">
+        <article class="recipe" id="smoothie-frutti-rossi-yogurt" data-category="Smoothie ghiacciati" data-name="smoothie frutti rossi yogurt" data-search="smoothie ghiacciati smoothie frutti rossi yogurt ricetta · circa 1 litro 350 g frutti rossi 400 ml latte 200 g yogurt 80 g zucchero frulla. filtra se vuoi. raffredda. non esagerare con yogurt denso.">
           <div class="recipe-top">
             <span class="badge">Smoothie ghiacciati</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3920,13 +4178,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Frulla bene.">Frulla bene.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda.">Raffredda.</li></ol>
+              <ol><li data-original="Frulla.">Frulla.</li><li data-original="Filtra se vuoi.">Filtra se vuoi.</li><li data-original="Raffredda.">Raffredda.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Non esagerare con yogurt denso.</p>
         </article>
         
-        <article class="recipe" id="smoothie-pesca-yogurt" data-category="Smoothie ghiacciati" data-name="smoothie pesca yogurt" data-search="smoothie ghiacciati smoothie pesca yogurt ricetta · circa 1 litro 400 g pesca 500 ml latte 150 g yogurt 60 g miele frulla. raffredda. versa. molto colazione estiva.">
+        <article class="recipe" id="smoothie-pesca-yogurt" data-category="Smoothie ghiacciati" data-name="smoothie pesca yogurt" data-search="smoothie ghiacciati smoothie pesca yogurt ricetta · circa 1 litro 400 g pesca 500 ml latte 150 g yogurt 60 g miele frulla. raffredda. versa. colazione estiva.">
           <div class="recipe-top">
             <span class="badge">Smoothie ghiacciati</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -3952,7 +4210,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla.">Frulla.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Molto colazione estiva.</p>
+          <p class="tip"><b>Consiglio:</b> Colazione estiva.</p>
         </article>
         
         <article class="recipe" id="smoothie-mela-kiwi" data-category="Smoothie ghiacciati" data-name="smoothie mela kiwi" data-search="smoothie ghiacciati smoothie mela kiwi ricetta · circa 1 litro 400 ml succo mela 3 kiwi 250 ml acqua 60 g zucchero frulla leggero. raffredda. versa. fresco.">
@@ -4192,7 +4450,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     <section class="category" id="ricette-ignoranti" data-category="Ricette ignoranti">
       <h2>Ricette ignoranti</h2>
       
-        <article class="recipe" id="mojito-xxl-da-festa" data-category="Ricette ignoranti" data-name="mojito xxl da festa" data-search="ricette ignoranti mojito xxl da festa ricetta · circa 1 litro 400 ml rum 450 ml soda 150 ml lime 160 g zucchero menta abbondante pesta menta, lime e zucchero. aggiungi liquidi. filtra e versa. da adulti responsabili. quindi bicchieri piccoli.">
+        <article class="recipe" id="mojito-xxl-da-festa" data-category="Ricette ignoranti" data-name="mojito xxl da festa" data-search="ricette ignoranti mojito xxl da festa ricetta · circa 1 litro 400 ml rum 450 ml soda 150 ml lime 160 g zucchero menta abbondante pesta menta, lime e zucchero. aggiungi liquidi. filtra e versa. bicchieri piccoli: siamo allegri, non incoscienti.">
           <div class="recipe-top">
             <span class="badge">Ricette ignoranti</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -4218,7 +4476,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Pesta menta, lime e zucchero.">Pesta menta, lime e zucchero.</li><li data-original="Aggiungi liquidi.">Aggiungi liquidi.</li><li data-original="Filtra e versa.">Filtra e versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Da adulti responsabili. Quindi bicchieri piccoli.</p>
+          <p class="tip"><b>Consiglio:</b> Bicchieri piccoli: siamo allegri, non incoscienti.</p>
         </article>
         
         <article class="recipe" id="nutella-oreo-devastante" data-category="Ricette ignoranti" data-name="nutella oreo devastante" data-search="ricette ignoranti nutella oreo devastante ricetta · circa 1 litro 650 ml latte 180 g nutella 6 oreo 100 ml panna frulla fino a liscio. raffredda. versa. non è una bevanda, è una dichiarazione di guerra.">
@@ -4366,7 +4624,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
           <p class="tip"><b>Consiglio:</b> Funziona benissimo.</p>
         </article>
         
-        <article class="recipe" id="cola-rum-frozen" data-category="Ricette ignoranti" data-name="cola rum frozen" data-search="ricette ignoranti cola rum frozen ricetta · circa 1 litro 650 ml cola 250 ml rum 50 ml lime sgasa la cola leggermente. mescola. versa. semplice, pericolosa.">
+        <article class="recipe" id="cola-rum-frozen" data-category="Ricette ignoranti" data-name="cola rum frozen" data-search="ricette ignoranti cola rum frozen ricetta · circa 1 litro 650 ml cola 250 ml rum 50 ml lime sgasa la cola. mescola. versa. semplice, pericolosa.">
           <div class="recipe-top">
             <span class="badge">Ricette ignoranti</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -4389,13 +4647,13 @@ footer { text-align:center; color:var(--muted); padding:32px; }
             </section>
             <section>
               <h4>Procedura</h4>
-              <ol><li data-original="Sgasa la cola leggermente.">Sgasa la cola leggermente.</li><li data-original="Mescola.">Mescola.</li><li data-original="Versa.">Versa.</li></ol>
+              <ol><li data-original="Sgasa la cola.">Sgasa la cola.</li><li data-original="Mescola.">Mescola.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
           <p class="tip"><b>Consiglio:</b> Semplice, pericolosa.</p>
         </article>
         
-        <article class="recipe" id="pistacchio-criminale" data-category="Ricette ignoranti" data-name="pistacchio criminale" data-search="ricette ignoranti pistacchio criminale ricetta · circa 1 litro 650 ml latte 180 g crema pistacchio 100 ml panna frulla bene. raffredda. versa. da fare quando hai ospiti, così la colpa è condivisa.">
+        <article class="recipe" id="pistacchio-criminale" data-category="Ricette ignoranti" data-name="pistacchio criminale" data-search="ricette ignoranti pistacchio criminale ricetta · circa 1 litro 650 ml latte 180 g crema pistacchio 100 ml panna frulla bene. raffredda. versa. la colpa va condivisa con gli ospiti.">
           <div class="recipe-top">
             <span class="badge">Ricette ignoranti</span>
             <a class="back" href="#indice">↑ indice</a>
@@ -4421,7 +4679,7 @@ footer { text-align:center; color:var(--muted); padding:32px; }
               <ol><li data-original="Frulla bene.">Frulla bene.</li><li data-original="Raffredda.">Raffredda.</li><li data-original="Versa.">Versa.</li></ol>
             </section>
           </div>
-          <p class="tip"><b>Consiglio:</b> Da fare quando hai ospiti, così la colpa è condivisa.</p>
+          <p class="tip"><b>Consiglio:</b> La colpa va condivisa con gli ospiti.</p>
         </article>
         
         <article class="recipe" id="molinari-lemon-slush" data-category="Ricette ignoranti" data-name="molinari lemon slush" data-search="ricette ignoranti molinari lemon slush circa 1 litro 250 ml sambuca molinari 650 ml lemon soda 70 ml limone sgasa lemon soda. mescola. versa. dopo cena, senza fare troppo i fenomeni.">
@@ -5131,19 +5389,30 @@ footer { text-align:center; color:var(--muted); padding:32px; }
         </article>
         
     </section>
-    
   </section>
 </main>
 
 <a class="btn float-top" href="#home">↑ Su</a>
-<footer>Ricettario personale non ufficiale. Ninja e SLUSHi sono marchi dei rispettivi proprietari.</footer>
+
+<footer>
+  Ricettario personale non ufficiale. Ninja e SLUSHi sono marchi dei rispettivi proprietari.
+</footer>
 
 <script>
 (function() {
-  function safeGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
-  function safeSet(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
-  function normalize(text) { return String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
-  function fmtNum(n) { if (Math.abs(n - Math.round(n)) < 0.05) return String(Math.round(n)); return String(Math.round(n * 10) / 10).replace(".", ","); }
+  function safeGet(key) {
+    try { return localStorage.getItem(key); } catch(e) { return null; }
+  }
+  function safeSet(key, value) {
+    try { localStorage.setItem(key, value); } catch(e) {}
+  }
+  function normalize(text) {
+    return String(text || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  function fmtNum(n) {
+    if (Math.abs(n - Math.round(n)) < 0.05) return String(Math.round(n));
+    return String(Math.round(n * 10) / 10).replace(".", ",");
+  }
   function scaleText(text, scale) {
     text = String(text || "");
     text = text.replace(/(\d+(?:[,.]\d+)?)(\s*-\s*)(\d+(?:[,.]\d+)?)/g, function(m,a,sep,b) {
@@ -5156,17 +5425,17 @@ footer { text-align:center; color:var(--muted); padding:32px; }
   }
 
   var search = document.getElementById("search");
-  var searchBtn = document.getElementById("searchBtn");
   var counter = document.getElementById("counter");
-  var cards = Array.prototype.slice.call(document.querySelectorAll(".recipe"));
+  var recipes = Array.prototype.slice.call(document.querySelectorAll(".recipe"));
   var categories = Array.prototype.slice.call(document.querySelectorAll(".category"));
   var filters = Array.prototype.slice.call(document.querySelectorAll(".filter"));
   var favFilter = document.getElementById("favFilter");
+  var searchBtn = document.getElementById("searchBtn");
   var darkBtn = document.getElementById("darkBtn");
   var activeCategory = "Tutte";
   var showFavOnly = safeGet("slushi_show_fav_only") === "1";
 
-  cards.forEach(function(card) {
+  recipes.forEach(function(card) {
     var favBtn = card.querySelector(".fav-btn");
     var doseBtns = Array.prototype.slice.call(card.querySelectorAll(".dose-btn"));
     var doseLabel = card.querySelector(".dose-label");
@@ -5207,7 +5476,8 @@ footer { text-align:center; color:var(--muted); padding:32px; }
   function update() {
     var query = normalize(search.value);
     var visible = 0;
-    cards.forEach(function(card) {
+
+    recipes.forEach(function(card) {
       var textOk = !query || normalize(card.getAttribute("data-search")).indexOf(query) !== -1;
       var catOk = activeCategory === "Tutte" || card.getAttribute("data-category") === activeCategory;
       var favOk = !showFavOnly || card.classList.contains("isFav");
@@ -5223,12 +5493,15 @@ footer { text-align:center; color:var(--muted); padding:32px; }
       cat.classList.toggle("hidden", !anyVisible);
     });
 
-    counter.textContent = "Mostro " + visible + " ricette/schede su " + cards.length;
+    counter.textContent = "Mostro " + visible + " ricette/schede su " + recipes.length;
   }
 
   function goToResults() {
     update();
-    document.getElementById("ricette").scrollIntoView({ behavior:"smooth" });
+    var target = document.getElementById("ricette");
+    if (target) {
+      target.scrollIntoView({ behavior:"smooth" });
+    }
   }
 
   searchBtn.addEventListener("click", goToResults);
@@ -5273,7 +5546,11 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     activeCategory = "Tutte";
     showFavOnly = false;
     safeSet("slushi_show_fav_only", "0");
-    filters.forEach(function(b) { b.classList.toggle("active", b.getAttribute("data-category") === "Tutte"); });
+
+    filters.forEach(function(b) {
+      b.classList.toggle("active", b.getAttribute("data-category") === "Tutte");
+    });
+
     updateFavButton();
     update();
   }
@@ -5282,20 +5559,85 @@ footer { text-align:center; color:var(--muted); padding:32px; }
     link.addEventListener("click", function(e) {
       var href = link.getAttribute("href");
       if (!href || href === "#") return;
+
       var target = document.getElementById(href.slice(1));
       if (!target) return;
+
       e.preventDefault();
+
+      // Per link a ricette o categorie, azzero filtri e ricerca così il target è visibile.
       resetViewForAnchor();
+
       setTimeout(function() {
         target.scrollIntoView({ behavior:"smooth", block:"start" });
-        try { history.replaceState(null, "", href); } catch(err) {}
+        try {
+          history.replaceState(null, "", href);
+        } catch(err) {}
       }, 40);
     });
   });
+
+  function openApp(){ document.body.classList.add("app-open"); }
+
+  var homeSearch = document.getElementById("homeSearch");
+  var homeSearchBtn = document.getElementById("homeSearchBtn");
+  if(homeSearchBtn){
+    homeSearchBtn.addEventListener("click", function(){
+      openApp();
+      search.value = homeSearch.value;
+      activeCategory = "Tutte";
+      filters.forEach(function(b) { b.classList.toggle("active", b.getAttribute("data-category") === "Tutte"); });
+      update();
+      setTimeout(function(){ document.getElementById("ricette").scrollIntoView({ behavior:"smooth" }); }, 80);
+    });
+  }
+  if(homeSearch){
+    homeSearch.addEventListener("keydown", function(e){ if(e.key === "Enter"){ e.preventDefault(); homeSearchBtn.click(); } });
+  }
+
+  Array.prototype.slice.call(document.querySelectorAll("[data-home-category]")).forEach(function(card){
+    card.addEventListener("click", function(e){
+      e.preventDefault();
+      openApp();
+      search.value = "";
+      activeCategory = card.getAttribute("data-home-category");
+      filters.forEach(function(b) { b.classList.toggle("active", b.getAttribute("data-category") === activeCategory); });
+      showFavOnly = false;
+      updateFavButton();
+      update();
+      setTimeout(function(){ document.getElementById("ricette").scrollIntoView({ behavior:"smooth" }); }, 80);
+    });
+  });
+
+  var openAllRecipesTop = document.getElementById("openAllRecipesTop");
+  if(openAllRecipesTop){
+    openAllRecipesTop.addEventListener("click", function(e){
+      e.preventDefault();
+      openApp();
+      search.value = "";
+      activeCategory = "Tutte";
+      filters.forEach(function(b) { b.classList.toggle("active", b.getAttribute("data-category") === "Tutte"); });
+      update();
+      setTimeout(function(){ document.getElementById("ricette").scrollIntoView({ behavior:"smooth" }); }, 80);
+    });
+  }
+
+  var openFavTop = document.getElementById("openFavTop");
+  if(openFavTop){
+    openFavTop.addEventListener("click", function(e){
+      e.preventDefault();
+      openApp();
+      showFavOnly = true;
+      updateFavButton();
+      update();
+      setTimeout(function(){ document.getElementById("ricette").scrollIntoView({ behavior:"smooth" }); }, 80);
+    });
+  }
 
   updateFavButton();
   update();
 })();
 </script>
+</div>
 </body>
 </html>
