@@ -101,3 +101,4 @@ body.app-open .tip{background:rgba(250,204,21,.10);border-left-color:#facc15;col
           git add index.html .github/workflows/step2-categorie.yml
           git diff --cached --quiet || git commit -m "Style category sections as app cards"
           git push
+# retrigger
