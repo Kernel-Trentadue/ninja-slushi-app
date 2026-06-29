@@ -1,0 +1,16 @@
+{
+  "name": "Ninja SLUSHi Ricettario",
+  "short_name": "SLUSHi",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff8ef",
+  "theme_color": "#e85d2a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
