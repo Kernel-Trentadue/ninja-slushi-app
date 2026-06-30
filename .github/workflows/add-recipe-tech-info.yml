@@ -1,4 +1,4 @@
-name: Make prep times recipe aware
+name: Skip quick cards for guide recipes
 
 on:
   workflow_dispatch:
@@ -14,47 +14,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Make preparation estimates vary by recipe
+      - name: Skip quick cards for Regole base e consigli
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
 
-          def patch(s):
-              old_start = s.find('function recipeTechInfo(cat,title){')
-              if old_start < 0:
-                  return s, False
-              old_end = s.find('function insertRecipeTech', old_start)
-              if old_end < 0:
-                  return s, False
+          targets = ['index.html', 'app-v3.html']
 
-              new_fn = r'''function recipeTechInfo(cat,title){let c=(cat||'').toLowerCase(),t=(title||'').toLowerCase();let info={prep:'3/5 min',machine:'25/35 min',serv:'2 bicchieri',fn:'Slush',diff:'Facile'};
-if(c.includes('granite')){info={prep:'3/5 min',machine:'25/35 min',serv:'2/3 bicchieri',fn:'Slush',diff:'Facile'};if(/cedrata|gassosa|cola|chinotto|tamarindo|orzata/.test(t))info.prep='1/2 min';if(/limone|lime|menta|pompelmo|arancia/.test(t))info.prep='3/5 min';if(/anguria|melone|pesca|albicocca|pera|kiwi|fragola|lampone|ciliegia|melagrana|uva|fichi|frutti/.test(t))info.prep='6/10 min';if(/mango|banana|cocco|ananas|cacao|latte/.test(t))info.prep='8/12 min';if(/caff|mandorla/.test(t))info.prep='3/6 min';if(/caff|cola|chinotto|tamarindo|orzata|mandorla/.test(t))info.machine='30/40 min';if(/limone|lime|menta|cedrata|gassosa|pompelmo|arancia/.test(t))info.machine='20/30 min';if(/banana|cacao|mango|pesca|melone|albicocca|pera|kiwi|fichi|frutti|fragola|lampone|ciliegia|melagrana|uva/.test(t))info.machine='30/45 min';if(/cocco|latte/.test(t)){info.machine='35/50 min';info.fn='Slush / Frozen Drink'}}
-else if(c.includes('frozen cocktail')){info={prep:'4/7 min',machine:'25/35 min',serv:'2 bicchieri',fn:'Spiked Slush',diff:'Facile'};if(/spritz|bellini|rossini|hugo|vodka lemon|gin lemon|campari|americano|limoncello/.test(t))info.prep='3/5 min';if(/mojito|margarita|daiquiri|paloma|moscow|caipiroska|negroni|cuba/.test(t))info.prep='5/8 min';if(/pina|colada|mai tai|rum punch|pornstar|sex on the beach|sangria|long island|espresso/.test(t))info.prep='7/10 min';if(/mojito|spritz|bellini|rossini|hugo|paloma|limoncello|campari|americano/.test(t))info.machine='20/30 min';if(/margarita|daiquiri|moscow|gin|vodka|cuba|negroni/.test(t))info.machine='25/35 min';if(/pina|colada|mai tai|rum punch|pornstar|sex on the beach|sangria|long island/.test(t))info.machine='30/45 min';if(/espresso/.test(t))info.machine='30/40 min'}
-else if(c.includes('cocktail analcolici')){info={prep:'3/5 min',machine:'20/30 min',serv:'2 bicchieri',fn:'Slush / Frozen Drink',diff:'Facile'};if(/limonata|ginger|lime|menta|cetriolo|arancia|spritz|mojito/.test(t))info.prep='3/5 min';if(/ananas|cocco|tropical|pesca|mela|cranberry|shirley/.test(t))info.prep='5/8 min';if(/cocco|ananas|tropical|pesca|mela|cranberry|shirley/.test(t))info.machine='25/35 min';if(/ginger|lime|menta|limonata|cetriolo|arancia/.test(t))info.machine='18/28 min'}
-else if(c.includes('frapp')){info={prep:'3/5 min',machine:'15/25 min',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(/caffe|caffè|vaniglia/.test(t))info.prep='2/4 min';if(/fragola|banana|mango|cocco|ananas/.test(t))info.prep='5/8 min';if(/cioccolato|nutella|nocciola|caramello|stracciatella|yogurt|miele/.test(t))info.prep='4/7 min';if(/caffe|caffè|vaniglia|fragola|banana/.test(t))info.machine='15/20 min';if(/cioccolato|nutella|nocciola|caramello|stracciatella/.test(t))info.machine='20/30 min';if(/yogurt|miele|cocco|ananas|mango/.test(t))info.machine='18/28 min'}
-else if(c.includes('milkshake')){info={prep:'3/5 min',machine:'15/25 min',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(/vaniglia/.test(t))info.prep='2/3 min';if(/fragola|banana/.test(t))info.prep='4/7 min';if(/nutella|oreo|cioccolato|kinder|snickers|mars|ferrero|pistacchio|burro|mou|tiramisu|cheesecake|raffaello|bounty/.test(t))info.prep='6/10 min';if(/vaniglia|fragola|banana/.test(t))info.machine='15/20 min';if(/nutella|oreo|cioccolato|kinder|snickers|mars|ferrero|pistacchio|burro|mou/.test(t))info.machine='22/32 min';if(/tiramisu|cheesecake|raffaello|bounty/.test(t))info.machine='20/30 min'}
-else if(c.includes('caff')){info={prep:'2/5 min',machine:'18/30 min',serv:'2 bicchieri',fn:'Frozen Drink / Slush',diff:'Facile'};if(/shakerato|cold brew|tonic|te|tè/.test(t))info.prep='2/4 min';if(/cappuccino|latte|macchiato|mocha|caramel|nocciola|mandorla|affogato/.test(t))info.prep='4/7 min';if(/shakerato|cold brew|tonic|te|tè/.test(t))info.machine='15/25 min';if(/cappuccino|latte|macchiato|mocha|caramel|nocciola|mandorla|affogato/.test(t))info.machine='22/35 min'}
-else if(c.includes('smoothie')){info={prep:'6/10 min',machine:'20/35 min',serv:'2 bicchieri',fn:'Frozen Drink',diff:'Facile'};if(/banana|mango|pesca|avocado|cocco/.test(t))info.prep='8/12 min';if(/fragola|frutti|mela|kiwi|ananas|lampone/.test(t))info.prep='6/10 min';if(/banana|mango|pesca|avocado|cocco/.test(t))info.machine='25/40 min';if(/fragola|frutti|mela|kiwi|ananas|lampone/.test(t))info.machine='20/30 min'}
-else if(c.includes('dessert')){info={prep:'8/12 min',machine:'25/40 min',serv:'2 porzioni',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(/tiramis|crema|panna|mascarpone|ricotta|cheesecake/.test(t))info.prep='10/15 min';if(/limone|sorbetto|cacao|cocco/.test(t))info.prep='6/10 min';if(/tiramis|crema|panna|mascarpone|ricotta|cheesecake/.test(t))info.machine='30/45 min';if(/limone|sorbetto|cacao|cocco/.test(t))info.machine='22/35 min'}
-else if(c.includes('amari')){info={prep:'2/5 min',machine:'20/35 min',serv:'2 bicchieri piccoli',fn:'Spiked Slush',diff:'Facile'};if(/crema|caffe|caffè|sambuca/.test(t)){info.prep='4/7 min';info.machine='25/40 min'}}
-else if(c.includes('ignoranti')){info={prep:'6/10 min',machine:'25/40 min',serv:'2 bicchieri',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(/red bull|cola|energy/.test(t)){info.prep='2/4 min';info.machine='18/28 min'}if(/nutella|oreo|kinder|cioccolato|burro/.test(t)){info.prep='6/10 min';info.machine='25/40 min'}}return info}'''
-              return s[:old_start] + new_fn + s[old_end:], True
+          old = "function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';"
+          new = "function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';if((cat||'').toLowerCase().includes('regole base'))return;"
 
-          for name in ['index.html', 'app-v3.html']:
+          changed_any = False
+          for name in targets:
               p = Path(name)
               if not p.exists():
                   continue
               s = p.read_text(encoding='utf-8')
-              s2, changed = patch(s)
-              if changed:
-                  p.write_text(s2, encoding='utf-8')
+              before = s
+              if old in s:
+                  s = s.replace(old, new, 1)
+              # fallback: remove any already-generated quick card inside guide articles if present in static html
+              import re
+              s = re.sub(r'(<article[^>]+data-category="Regole base e consigli"[^>]*>)(.*?)(<div class="recipe-tech">.*?</div>\s*)(.*?</article>)', lambda m: m.group(1)+m.group(2)+m.group(4), s, flags=re.S)
+              if s != before:
+                  p.write_text(s, encoding='utf-8')
+                  changed_any = True
+
+          if not changed_any:
+              raise SystemExit('No changes made: target pattern not found')
           PY
-      - name: Commit prep estimates
+      - name: Commit skip guide cards
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html app-v3.html
-          git diff --cached --quiet || git commit -m "Make prep time estimates vary by recipe"
+          git diff --cached --quiet || git commit -m "Skip quick card for guide recipes"
           git push
-# rerun prep estimates
+# rerun skip guide cards
