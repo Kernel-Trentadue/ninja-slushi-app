@@ -1,0 +1,67 @@
+name: Enable PWA
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/enable-pwa.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch PWA tags and service worker registration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          head_tags = '''
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#030712">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ninja SLUSHi">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+'''
+
+          sw_script = '''
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./service-worker.js').catch(function () {});
+  });
+}
+</script>
+'''
+
+          for file in ['index.html', 'app-v3.html']:
+              p = Path(file)
+              if not p.exists():
+                  continue
+              s = p.read_text(encoding='utf-8')
+              changed = False
+
+              if 'manifest.webmanifest' not in s and '</head>' in s:
+                  s = s.replace('</head>', head_tags + '\n</head>', 1)
+                  changed = True
+
+              if 'serviceWorker.register' not in s and '</body>' in s:
+                  s = s.replace('</body>', sw_script + '\n</body>', 1)
+                  changed = True
+
+              if changed:
+                  p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit PWA patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app-v3.html
+          git diff --cached --quiet || git commit -m "Enable PWA install support"
+          git push
