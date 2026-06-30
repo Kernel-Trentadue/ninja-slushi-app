@@ -1,4 +1,4 @@
-name: Add recipe technical info
+name: Improve recipe technical info
 
 on:
   workflow_dispatch:
@@ -14,24 +14,103 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add automatic recipe info boxes
+      - name: Replace generic estimates with recipe-aware estimates
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          css = r'''
-/* SCHEDA TECNICA RICETTA */
-.recipe-tech{margin:14px 0 16px;padding:14px;border-radius:18px;background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(168,85,247,.10));border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-.recipe-tech-title{font-weight:1000;color:#fff;margin:0 0 10px;font-size:1rem;text-transform:uppercase;letter-spacing:.08em}
-.recipe-tech-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.recipe-tech-item{display:flex;gap:8px;align-items:flex-start;padding:9px 10px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);font-weight:850;color:#e5e7eb;line-height:1.2}
-.recipe-tech-item b{display:block;color:#38bdf8;font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
-.recipe-tech-item span{display:block;color:#fff;font-size:.94rem}
-@media(max-width:640px){.recipe-tech{padding:12px;border-radius:16px}.recipe-tech-grid{grid-template-columns:1fr}.recipe-tech-item{padding:8px 9px}.recipe-tech-item span{font-size:.9rem}}
-/* FINE SCHEDA TECNICA RICETTA */
-'''
+          new_js = r'''function recipeTechInfo(card){
+  let cat=(card.dataset.category||'').toLowerCase();
+  let name=((card.querySelector('h3')||{}).textContent||card.id||'').toLowerCase();
+  let t=name+' '+cat;
+  const has=(...w)=>w.some(x=>t.includes(x));
+  let prep='5 min', machine='25–35 min', serv='2 bicchieri', fn='Slush', texture='Slush morbida';
 
-          js = r'''function recipeTechInfo(cat){let c=(cat||'').toLowerCase();if(c.includes('frozen cocktail'))return {prep:'5/8 min',cool:'Ingredienti già freddi',serv:'2 bicchieri',fn:'Spiked Slush',diff:'Facile'};if(c.includes('cocktail analcolici'))return {prep:'5 min',cool:'Ingredienti già freddi',serv:'2 bicchieri',fn:'Slush / Frozen Drink',diff:'Facile'};if(c.includes('frapp'))return {prep:'5 min',cool:'Latte molto freddo',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(c.includes('milkshake'))return {prep:'5 min',cool:'Latte molto freddo',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(c.includes('caff'))return {prep:'5 min',cool:'Caffè già freddo',serv:'2 bicchieri',fn:'Frozen Drink / Slush',diff:'Facile'};if(c.includes('smoothie'))return {prep:'5/7 min',cool:'Frutta fredda o surgelata',serv:'2 bicchieri',fn:'Frozen Drink',diff:'Facile'};if(c.includes('dessert'))return {prep:'8/10 min',cool:'20/30 min se serve',serv:'2 porzioni',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(c.includes('amari'))return {prep:'5 min',cool:'Liquori già freddi',serv:'2 bicchieri piccoli',fn:'Spiked Slush',diff:'Facile'};if(c.includes('ignoranti'))return {prep:'5/8 min',cool:'Ingredienti ben freddi',serv:'2 bicchieri',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(c.includes('granite'))return {prep:'5 min',cool:'30/45 min in frigo',serv:'2/3 bicchieri',fn:'Slush',diff:'Facile'};return {prep:'5 min',cool:'Ingredienti freddi',serv:'2 bicchieri',fn:'Slush',diff:'Facile'}}function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';let info=recipeTechInfo(cat);let box=document.createElement('div');box.className='recipe-tech';box.innerHTML=`<div class="recipe-tech-title">Scheda rapida</div><div class="recipe-tech-grid"><div class="recipe-tech-item">⏱️<div><b>Preparazione</b><span>${info.prep}</span></div></div><div class="recipe-tech-item">❄️<div><b>Raffreddamento</b><span>${info.cool}</span></div></div><div class="recipe-tech-item">🥤<div><b>Porzioni</b><span>${info.serv}</span></div></div><div class="recipe-tech-item">⚙️<div><b>Funzione consigliata</b><span>${info.fn}</span></div></div><div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>${info.diff}</span></div></div></div>`;let target=card.querySelector('.recipe-photo-wrap')||card.querySelector('.meta')||card.querySelector('h3');if(target)target.insertAdjacentElement('afterend',box);else card.prepend(box)}'''
+  if(cat.includes('granite')){
+    fn='Slush'; serv='2/3 bicchieri'; texture='Granita fine e cucchiaiabile'; prep='5 min';
+    if(has('caffè','caffe','mandorla','orzata','cocco','banana','cacao','mango','pera','pesca','fichi','fico','ananas')) machine='35–45 min';
+    else if(has('anguria','melone','pompelmo','arancia','limone','menta','cola','gassosa','cedrata','chinotto','tamarindo')) machine='22–32 min';
+    else if(has('fragola','frutti','bosco','lampone','ciliegia','melagrana','uva','kiwi','passion')) machine='30–40 min';
+    else machine='25–38 min';
+  }
+
+  if(cat.includes('frozen cocktail')){
+    fn='Spiked Slush'; serv='2 bicchieri'; texture='Frozen da bere con cannuccia'; prep='5/8 min';
+    if(has('spritz','bellini','rossini','hugo','campari','americano','limoncello')) machine='25–35 min';
+    else if(has('mojito','daiquiri','paloma','moscow','vodka lemon','gin lemon','caipiroska')) machine='30–42 min';
+    else if(has('margarita','negroni','espresso','pornstar','sex on the beach','cuba libre','mai tai','rum punch','long island','sangria','pina colada')) machine='35–50 min';
+    else machine='30–45 min';
+  }
+
+  if(cat.includes('cocktail analcolici')){
+    fn='Slush / Frozen Drink'; serv='2 bicchieri'; texture='Frozen leggero'; prep='5 min';
+    if(has('ananas','cocco','tropical','mela','pesca','cranberry')) machine='30–40 min';
+    else if(has('limonata','menta','lime','cetriolo','ginger','arancia','spritz','mojito')) machine='22–34 min';
+    else machine='25–38 min';
+  }
+
+  if(cat.includes('frapp')){
+    fn='Milkshake'; serv='2 bicchieri'; texture='Cremoso ma non troppo denso'; prep='5/7 min';
+    if(has('nutella','nocciola','caramello','stracciatella','cocco','ananas','yogurt','miele')) machine='30–42 min';
+    else if(has('caffè','caffe','vaniglia','fragola','banana','mango','cioccolato')) machine='25–35 min';
+    else machine='28–40 min';
+  }
+
+  if(cat.includes('milkshake')){
+    fn='Milkshake'; serv='2 bicchieri'; texture='Denso e cremoso'; prep='5/8 min';
+    if(has('nutella','oreo','kinder','pistacchio','tiramisù','tiramisu','snickers','mars','raffaello','ferrero','burro','arachidi','mou','bounty','cioccolato')) machine='35–50 min';
+    else if(has('vaniglia','fragola','banana')) machine='25–38 min';
+    else machine='30–45 min';
+  }
+
+  if(cat.includes('caff')){
+    fn='Frozen Drink / Slush'; serv='2 bicchieri'; texture='Freddo cremoso'; prep='5 min';
+    if(has('mocha','caramel','nocciola','affogato')) machine='30–45 min';
+    else if(has('tè','te','tonic','cold brew')) machine='20–32 min';
+    else machine='25–38 min';
+  }
+
+  if(cat.includes('smoothie')){
+    fn='Frozen Drink'; serv='2 bicchieri'; texture='Smoothie freddo e vellutato'; prep='5/7 min';
+    if(has('banana','mango','avocado','yogurt','proteico','burro')) machine='35–48 min';
+    else if(has('anguria','melone','ananas','mela','kiwi','pesca')) machine='28–40 min';
+    else machine='30–45 min';
+  }
+
+  if(cat.includes('amari')){
+    fn='Spiked Slush'; serv='2 bicchieri piccoli'; texture='Digestivo frozen'; prep='5 min'; machine=has('crema','caffè','caffe')?'35–50 min':'30–45 min';
+  }
+
+  if(cat.includes('dessert')){
+    fn='Milkshake / Frozen Drink'; serv='2 porzioni'; texture='Dessert freddo cremoso'; prep='8/10 min';
+    if(has('tiramisù','tiramisu','nutella','oreo','pistacchio','cioccolato','mascarpone','crema')) machine='38–55 min';
+    else machine='32–48 min';
+  }
+
+  if(cat.includes('ignoranti')){
+    fn='Milkshake / Frozen Drink'; serv='2 bicchieri'; texture='Molto densa e golosa'; prep='6/10 min'; machine='38–55 min';
+  }
+
+  return {prep,machine,serv,fn,texture};
+}
+function insertRecipeTech(card){
+  if(card.querySelector('.recipe-tech'))return;
+  let info=recipeTechInfo(card);
+  let box=document.createElement('div');
+  box.className='recipe-tech';
+  box.innerHTML=`<div class="recipe-tech-title">Scheda rapida stimata</div><div class="recipe-tech-grid"><div class="recipe-tech-item">⏱️<div><b>Preparazione</b><span>${info.prep}</span></div></div><div class="recipe-tech-item">🧊<div><b>Tempo in macchina</b><span>${info.machine}</span></div></div><div class="recipe-tech-item">🥤<div><b>Porzioni</b><span>${info.serv}</span></div></div><div class="recipe-tech-item">⚙️<div><b>Funzione consigliata</b><span>${info.fn}</span></div></div><div class="recipe-tech-item">📌<div><b>Consistenza</b><span>${info.texture}</span></div></div></div>`;
+  let target=card.querySelector('.recipe-photo-wrap')||card.querySelector('.meta')||card.querySelector('h3');
+  if(target)target.insertAdjacentElement('afterend',box);else card.prepend(box);
+}'''
+
+          def replace_between(s, start_marker, end_marker, replacement):
+              a=s.find(start_marker)
+              if a<0:
+                  return s, False
+              b=s.find(end_marker,a)
+              if b<0:
+                  return s, False
+              return s[:a]+replacement+s[b:], True
 
           for name in ['index.html','app-v3.html']:
               p=Path(name)
@@ -39,26 +118,20 @@ jobs:
                   continue
               s=p.read_text(encoding='utf-8')
               changed=False
-              if 'SCHEDA TECNICA RICETTA' not in s and '</style>' in s:
-                  s=s.replace('</style>', css+'\n</style>', 1)
-                  changed=True
-              if 'function recipeTechInfo' not in s:
-                  marker='function cleanRecipe(r){'
-                  if marker in s:
-                      s=s.replace(marker, js+marker, 1)
-                      changed=True
-              if 'insertRecipeTech(c);wireDose(c);wireFav(c);return c}' not in s:
-                  old='wireDose(c);wireFav(c);return c}'
-                  if old in s:
-                      s=s.replace(old,'insertRecipeTech(c);wireDose(c);wireFav(c);return c}',1)
-                      changed=True
+              s=s.replace('SCHEDA TECNICA RICETTA','SCHEDA TECNICA RICETTA')
+              s, ok = replace_between(s, 'function recipeTechInfo', 'function cleanRecipe', new_js+'function cleanRecipe')
+              changed = changed or ok
+              s=s.replace('insertRecipeTech(c);wireDose(c);wireFav(c);return c}', 'insertRecipeTech(c);wireDose(c);wireFav(c);return c}')
+              s=s.replace('insertRecipeTech(c);wireRecipe(c);return c}', 'insertRecipeTech(c);wireRecipe(c);return c}')
+              s=s.replace('Raffreddamento', 'Tempo in macchina')
+              s=s.replace('Difficoltà', 'Consistenza')
               if changed:
                   p.write_text(s,encoding='utf-8')
           PY
-      - name: Commit recipe info boxes
+      - name: Commit smarter machine time estimates
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html app-v3.html
-          git diff --cached --quiet || git commit -m "Add technical info boxes to recipes"
+          git diff --cached --quiet || git commit -m "Make recipe quick cards estimate machine time per recipe"
           git push
