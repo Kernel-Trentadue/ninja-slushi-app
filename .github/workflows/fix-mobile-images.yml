@@ -56,3 +56,4 @@ jobs:
           git add index.html app-v3.html
           git diff --cached --quiet || git commit -m "Fix mobile recipe image sizing"
           git push
+# rerun 2026-06-30
