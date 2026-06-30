@@ -1,10 +1,13 @@
 {
   "name": "Ninja SLUSHi Ricettario",
   "short_name": "SLUSHi",
+  "description": "Ricettario Ninja SLUSHi con granite, frozen cocktail, frappè, milkshake e dessert freddi.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#fff8ef",
-  "theme_color": "#e85d2a",
+  "orientation": "portrait",
+  "background_color": "#030712",
+  "theme_color": "#030712",
   "icons": [
     {
       "src": "icon.svg",
