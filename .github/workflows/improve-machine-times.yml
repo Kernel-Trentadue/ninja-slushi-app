@@ -1,0 +1,53 @@
+name: Improve machine times
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/improve-machine-times.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch recipe technical estimates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          new_func = r'''function recipeTechInfo(cat,title){let c=(cat||'').toLowerCase(),t=(title||'').toLowerCase();let info={prep:'5 min',machine:'25/35 min',serv:'2 bicchieri',fn:'Slush',diff:'Facile'};if(c.includes('granite')){info={prep:'5 min',machine:'25/35 min',serv:'2/3 bicchieri',fn:'Slush',diff:'Facile'};if(/caff|cola|chinotto|tamarindo|orzata|mandorla/.test(t))info.machine='30/40 min';if(/limone|lime|menta|cedrata|gassosa|pompelmo|arancia/.test(t))info.machine='20/30 min';if(/banana|cacao|mango|pesca|melone|albicocca|pera|kiwi|fichi|frutti|fragola|lampone|ciliegia|melagrana|uva/.test(t))info.machine='30/45 min';if(/cocco|latte/.test(t)){info.machine='35/50 min';info.fn='Slush / Frozen Drink'}}else if(c.includes('frozen cocktail')){info={prep:'5/8 min',machine:'25/35 min',serv:'2 bicchieri',fn:'Spiked Slush',diff:'Facile'};if(/mojito|spritz|bellini|rossini|hugo|paloma|limoncello|campari|americano/.test(t))info.machine='20/30 min';if(/margarita|daiquiri|moscow|gin|vodka|cuba|negroni/.test(t))info.machine='25/35 min';if(/pina|colada|mai tai|rum punch|pornstar|sex on the beach|sangria|long island/.test(t))info.machine='30/45 min';if(/espresso/.test(t))info.machine='30/40 min'}else if(c.includes('cocktail analcolici')){info={prep:'5 min',machine:'20/30 min',serv:'2 bicchieri',fn:'Slush / Frozen Drink',diff:'Facile'};if(/cocco|ananas|tropical|pesca|mela|cranberry|shirley/.test(t))info.machine='25/35 min';if(/ginger|lime|menta|limonata|cetriolo|arancia/.test(t))info.machine='18/28 min'}else if(c.includes('frapp')){info={prep:'5 min',machine:'15/25 min',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(/caffe|caffè|vaniglia|fragola|banana/.test(t))info.machine='15/20 min';if(/cioccolato|nutella|nocciola|caramello|stracciatella/.test(t))info.machine='20/30 min';if(/yogurt|miele|cocco|ananas|mango/.test(t))info.machine='18/28 min'}else if(c.includes('milkshake')){info={prep:'5 min',machine:'15/25 min',serv:'2 bicchieri',fn:'Milkshake',diff:'Facile'};if(/vaniglia|fragola|banana/.test(t))info.machine='15/20 min';if(/nutella|oreo|cioccolato|kinder|snickers|mars|ferrero|pistacchio|burro|mou/.test(t))info.machine='22/32 min';if(/tiramisu|cheesecake|raffaello|bounty/.test(t))info.machine='20/30 min'}else if(c.includes('caff')){info={prep:'5 min',machine:'18/30 min',serv:'2 bicchieri',fn:'Frozen Drink / Slush',diff:'Facile'};if(/shakerato|cold brew|tonic|te|tè/.test(t))info.machine='15/25 min';if(/cappuccino|latte|macchiato|mocha|caramel|nocciola|mandorla|affogato/.test(t))info.machine='22/35 min'}else if(c.includes('smoothie')){info={prep:'5/7 min',machine:'20/35 min',serv:'2 bicchieri',fn:'Frozen Drink',diff:'Facile'};if(/banana|mango|pesca|avocado|cocco/.test(t))info.machine='25/40 min';if(/fragola|frutti|mela|kiwi|ananas|lampone/.test(t))info.machine='20/30 min'}else if(c.includes('dessert')){info={prep:'8/10 min',machine:'25/40 min',serv:'2 porzioni',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(/tiramis|crema|panna|mascarpone|ricotta|cheesecake/.test(t))info.machine='30/45 min';if(/limone|sorbetto|cacao|cocco/.test(t))info.machine='22/35 min'}else if(c.includes('amari')){info={prep:'5 min',machine:'20/35 min',serv:'2 bicchieri piccoli',fn:'Spiked Slush',diff:'Facile'};if(/crema|caffe|caffè|sambuca/.test(t))info.machine='25/40 min'}else if(c.includes('ignoranti')){info={prep:'5/8 min',machine:'25/40 min',serv:'2 bicchieri',fn:'Milkshake / Frozen Drink',diff:'Facile'};if(/red bull|cola|energy/.test(t))info.machine='18/28 min';if(/nutella|oreo|kinder|cioccolato|burro/.test(t))info.machine='25/40 min'}return info}function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';let title=(card.querySelector('h3')?.textContent||card.id||'');let info=recipeTechInfo(cat,title);let box=document.createElement('div');box.className='recipe-tech';box.innerHTML=`<div class="recipe-tech-title">Scheda rapida</div><div class="recipe-tech-grid"><div class="recipe-tech-item">⏱️<div><b>Preparazione</b><span>${info.prep}</span></div></div><div class="recipe-tech-item">🧊<div><b>Tempo in macchina</b><span>${info.machine}</span></div></div><div class="recipe-tech-item">🥤<div><b>Porzioni</b><span>${info.serv}</span></div></div><div class="recipe-tech-item">⚙️<div><b>Funzione consigliata</b><span>${info.fn}</span></div></div><div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>${info.diff}</span></div></div></div>`;let target=card.querySelector('.recipe-photo-wrap')||card.querySelector('.meta')||card.querySelector('h3');if(target)target.insertAdjacentElement('afterend',box);else card.prepend(box)}'''
+
+          for fname in ['index.html','app-v3.html']:
+              p=Path(fname)
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding='utf-8')
+              changed=False
+              # label fallback in old CSS/HTML snippets
+              s=s.replace('<b>Raffreddamento</b>','<b>Tempo in macchina</b>')
+              s=s.replace('❄️<div><b>Tempo in macchina</b>','🧊<div><b>Tempo in macchina</b>')
+              # replace full recipeTechInfo + insertRecipeTech block
+              pattern=r"function recipeTechInfo\(cat\).*?function cleanRecipe"
+              ns,n=re.subn(pattern,new_func+'function cleanRecipe',s,flags=re.S)
+              if n:
+                  s=ns; changed=True
+              # make sure cleanRecipe calls insertRecipeTech before wireRecipe/wireDose
+              s=s.replace("function cleanRecipe(el){let c=el.cloneNode(true);c.querySelectorAll('.back').forEach(x=>x.remove());wireRecipe(c);return c}","function cleanRecipe(el){let c=el.cloneNode(true);c.querySelectorAll('.back').forEach(x=>x.remove());insertRecipeTech(c);wireRecipe(c);return c}")
+              s=s.replace("function cleanRecipe(r){let c=r.cloneNode(true);$$('.back',c).forEach(x=>x.remove());let cat=c.dataset.category||'',b=c.querySelector('.badge');if(b)b.textContent=(catInfo[cat]?.[0]||'🥷')+' '+cat;wireDose(c);wireFav(c);return c}","function cleanRecipe(r){let c=r.cloneNode(true);$$('.back',c).forEach(x=>x.remove());let cat=c.dataset.category||'',b=c.querySelector('.badge');if(b)b.textContent=(catInfo[cat]?.[0]||'🥷')+' '+cat;insertRecipeTech(c);wireDose(c);wireFav(c);return c}")
+              if 'Tempo in macchina' in s:
+                  changed=True
+              if changed:
+                  p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit improved machine times
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app-v3.html
+          git diff --cached --quiet || git commit -m "Improve estimated machine times per recipe"
+          git push
