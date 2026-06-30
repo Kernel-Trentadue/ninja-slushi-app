@@ -118,11 +118,8 @@ function insertRecipeTech(card){
                   continue
               s=p.read_text(encoding='utf-8')
               changed=False
-              s=s.replace('SCHEDA TECNICA RICETTA','SCHEDA TECNICA RICETTA')
               s, ok = replace_between(s, 'function recipeTechInfo', 'function cleanRecipe', new_js+'function cleanRecipe')
               changed = changed or ok
-              s=s.replace('insertRecipeTech(c);wireDose(c);wireFav(c);return c}', 'insertRecipeTech(c);wireDose(c);wireFav(c);return c}')
-              s=s.replace('insertRecipeTech(c);wireRecipe(c);return c}', 'insertRecipeTech(c);wireRecipe(c);return c}')
               s=s.replace('Raffreddamento', 'Tempo in macchina')
               s=s.replace('Difficoltà', 'Consistenza')
               if changed:
@@ -135,3 +132,4 @@ function insertRecipeTech(card){
           git add index.html app-v3.html
           git diff --cached --quiet || git commit -m "Make recipe quick cards estimate machine time per recipe"
           git push
+# rerun smart estimates
