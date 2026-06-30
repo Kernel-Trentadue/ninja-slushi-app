@@ -1,0 +1,52 @@
+name: Refine recipe technical info
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/refine-recipe-tech-info.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch technical info estimates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          new_js = r'''function recipeTechInfo(cat,title,id){let c=(cat||'').toLowerCase(),t=(title||'').toLowerCase(),x=(id||t||'').toLowerCase();let h=0;for(let ch of x)h=(h+ch.charCodeAt(0))%97;let pick=(a)=>a[h%a.length];let out={prep:'5 min',cool:'Ingredienti ben freddi',serv:'2 bicchieri',fn:'Slush',diff:'Facile'};
+if(c.includes('granite')){out.prep=pick(['4 min','5 min','6 min','7 min']);out.serv=pick(['2 bicchieri grandi','2/3 bicchieri','3 bicchieri piccoli']);out.fn='Slush';out.cool=pick(['Usa acqua e succo ben freddi','Base liquida ben fredda','Sciroppo/base fredda, non calda','Ingredienti freddi prima di avviare']);if(x.includes('mandorla')||x.includes('cocco')||x.includes('banana')||x.includes('cacao')){out.prep='6/8 min';out.cool='Base cremosa già fredda';out.serv='2 bicchieri';}if(x.includes('caffe')||x.includes('caff')){out.prep='5 min';out.cool='Caffè già freddo';out.serv='2 bicchieri';}if(x.includes('limone')||x.includes('lime')||x.includes('menta'))out.prep='4/5 min';return out;}
+if(c.includes('frozen cocktail')){out.prep=pick(['6 min','7 min','8 min']);out.cool=pick(['Liquidi già freddi','Bicchiere e ingredienti freddi','Succo e alcol ben freddi','Niente ingredienti caldi']);out.serv=pick(['2 cocktail','2 bicchieri','2 porzioni']);out.fn='Spiked Slush';if(x.includes('mojito')||x.includes('caipiroska'))out.prep='8 min';if(x.includes('espresso')||x.includes('caffe')){out.prep='6 min';out.cool='Caffè raffreddato prima dell’uso';}if(x.includes('sangria')){out.prep='10 min';out.serv='3 bicchieri';}return out;}
+if(c.includes('cocktail analcolici')){out.prep=pick(['5 min','6 min','7 min']);out.cool=pick(['Succhi e soda ben freddi','Ingredienti già freddi','Frutta e liquidi freddi','Base fredda prima di avviare']);out.serv=pick(['2 bicchieri','2/3 bicchieri','2 drink']);out.fn=pick(['Slush','Frozen Drink']);if(x.includes('virgin-mojito')||x.includes('cetriolo')||x.includes('menta'))out.prep='7 min';return out;}
+if(c.includes('frapp')){out.prep=pick(['5 min','6 min','7 min']);out.cool=pick(['Latte molto freddo','Latte e frutta ben freddi','Base cremosa fredda','Ingredienti da frigo, non a temperatura ambiente']);out.serv='2 bicchieri';out.fn='Milkshake';if(x.includes('nutella')||x.includes('nocciola')||x.includes('stracciatella'))out.prep='7 min';return out;}
+if(c.includes('milkshake')){out.prep=pick(['5 min','6 min','8 min']);out.cool=pick(['Latte molto freddo','Gelato/latte ben freddi','Base cremosa fredda','Ingredienti freddi e densi']);out.serv=pick(['2 bicchieri','2 bicchieri grandi']);out.fn='Milkshake';if(x.includes('oreo')||x.includes('kinder')||x.includes('snickers')||x.includes('mars')||x.includes('ferrero')||x.includes('raffaello'))out.prep='8 min';return out;}
+if(c.includes('caff')){out.prep=pick(['4 min','5 min','6 min']);out.cool=pick(['Caffè già freddo','Caffè raffreddato prima di avviare','Latte e caffè freddi','Base caffè ben fredda']);out.serv=pick(['2 bicchieri','2 caffè freddi']);out.fn=pick(['Frozen Drink','Slush']);if(x.includes('affogato')){out.prep='7 min';out.fn='Milkshake / Frozen Drink';}return out;}
+if(c.includes('smoothie')){out.prep=pick(['5 min','6 min','7 min']);out.cool=pick(['Frutta fredda o surgelata','Yogurt e frutta ben freddi','Base fredda e frutta matura','Ingredienti freddi prima di avviare']);out.serv=pick(['2 bicchieri','2 smoothie']);out.fn='Frozen Drink';return out;}
+if(c.includes('dessert')){out.prep=pick(['8 min','9 min','10 min']);out.cool=pick(['Crema/base già fredda','Ingredienti freddi e densi','Base preparata fredda','Riposo solo se la crema è tiepida']);out.serv=pick(['2 porzioni','2 bicchieri dessert']);out.fn=pick(['Milkshake','Frozen Drink']);return out;}
+if(c.includes('amari')){out.prep=pick(['4 min','5 min','6 min']);out.cool=pick(['Liquore già freddo','Bicchierini e base freddi','Amaro ben freddo','Base fredda prima di avviare']);out.serv=pick(['2 bicchieri piccoli','2 digestivi frozen']);out.fn='Spiked Slush';return out;}
+if(c.includes('ignoranti')){out.prep=pick(['6 min','7 min','8 min']);out.cool=pick(['Ingredienti molto freddi','Base dolce fredda','Latte/soda freddi','Tutto freddo prima di avviare']);out.serv=pick(['2 bicchieri','2 bicchieri grandi']);out.fn=pick(['Milkshake','Frozen Drink']);return out;}
+return out}function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';let title=(card.querySelector('h3')?.textContent||card.id||'');let info=recipeTechInfo(cat,title,card.id||'');let box=document.createElement('div');box.className='recipe-tech';box.innerHTML=`<div class="recipe-tech-title">Scheda rapida</div><div class="recipe-tech-grid"><div class="recipe-tech-item">⏱️<div><b>Preparazione</b><span>${info.prep}</span></div></div><div class="recipe-tech-item">❄️<div><b>Base fredda</b><span>${info.cool}</span></div></div><div class="recipe-tech-item">🥤<div><b>Porzioni</b><span>${info.serv}</span></div></div><div class="recipe-tech-item">⚙️<div><b>Funzione consigliata</b><span>${info.fn}</span></div></div><div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>${info.diff}</span></div></div></div>`;let target=card.querySelector('.recipe-photo-wrap')||card.querySelector('.meta')||card.querySelector('h3');if(target)target.insertAdjacentElement('afterend',box);else card.prepend(box)}'''
+
+          for name in ['index.html','app-v3.html']:
+              p=Path(name)
+              if not p.exists():
+                  continue
+              s=p.read_text(encoding='utf-8')
+              # replace the whole old function block up to cleanRecipe
+              s2=re.sub(r"function recipeTechInfo\(cat\).*?function cleanRecipe", new_js + 'function cleanRecipe', s, count=1, flags=re.S)
+              if s2 != s:
+                  p.write_text(s2,encoding='utf-8')
+          PY
+      - name: Commit refined estimates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app-v3.html
+          git diff --cached --quiet || git commit -m "Refine recipe quick technical estimates"
+          git push
