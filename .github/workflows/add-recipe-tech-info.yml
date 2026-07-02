@@ -1,4 +1,4 @@
-name: Skip quick cards for guide recipes
+name: Remove difficulty quick card item
 
 on:
   workflow_dispatch:
@@ -14,40 +14,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Skip quick cards for Regole base e consigli
+      - name: Remove difficulty item
         run: |
           python - <<'PY'
           from pathlib import Path
 
           targets = ['index.html', 'app-v3.html']
+          changed = False
 
-          old = "function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';"
-          new = "function insertRecipeTech(card){if(card.querySelector('.recipe-tech'))return;let cat=card.dataset.category||'';if((cat||'').toLowerCase().includes('regole base'))return;"
+          snippets = [
+              '<div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>${info.diff}</span></div></div>',
+              '<div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>Facile</span></div></div>',
+              '<div class="recipe-tech-item">📌<div><b>Difficolta</b><span>${info.diff}</span></div></div>',
+              '<div class="recipe-tech-item">📌<div><b>Difficolta</b><span>Facile</span></div></div>',
+          ]
 
-          changed_any = False
           for name in targets:
               p = Path(name)
               if not p.exists():
                   continue
               s = p.read_text(encoding='utf-8')
-              before = s
-              if old in s:
-                  s = s.replace(old, new, 1)
-              # fallback: remove any already-generated quick card inside guide articles if present in static html
-              import re
-              s = re.sub(r'(<article[^>]+data-category="Regole base e consigli"[^>]*>)(.*?)(<div class="recipe-tech">.*?</div>\s*)(.*?</article>)', lambda m: m.group(1)+m.group(2)+m.group(4), s, flags=re.S)
-              if s != before:
+              old = s
+              for snippet in snippets:
+                  s = s.replace(snippet, '')
+              if s != old:
                   p.write_text(s, encoding='utf-8')
-                  changed_any = True
+                  changed = True
 
-          if not changed_any:
-              raise SystemExit('No changes made: target pattern not found')
+          if not changed:
+              raise SystemExit('Nothing changed')
           PY
-      - name: Commit skip guide cards
+      - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html app-v3.html
-          git diff --cached --quiet || git commit -m "Skip quick card for guide recipes"
+          git diff --cached --quiet || git commit -m "Remove difficulty from quick cards"
           git push
-# rerun skip guide cards
+# rerun remove difficulty item
