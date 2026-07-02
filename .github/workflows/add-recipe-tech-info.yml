@@ -1,4 +1,4 @@
-name: Remove difficulty quick card item
+name: Add new aperitivo and milkshake recipes
 
 on:
   workflow_dispatch:
@@ -14,41 +14,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Remove difficulty item
+      - name: Patch ricette-source
         run: |
           python - <<'PY'
           from pathlib import Path
+          from html import escape
 
-          targets = ['index.html', 'app-v3.html']
-          changed = False
+          p = Path('ricette-source.html')
+          html = p.read_text(encoding='utf-8')
 
-          snippets = [
-              '<div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>${info.diff}</span></div></div>',
-              '<div class="recipe-tech-item">📌<div><b>Difficoltà</b><span>Facile</span></div></div>',
-              '<div class="recipe-tech-item">📌<div><b>Difficolta</b><span>${info.diff}</span></div></div>',
-              '<div class="recipe-tech-item">📌<div><b>Difficolta</b><span>Facile</span></div></div>',
-          ]
+          data = [
+          ('bicicletta-frozen','Frozen cocktail','Bicicletta Frozen','images/bicicletta-frozen.jpg','120 ml Campari|180 ml Prosecco ben freddo|120 ml soda fredda|30 ml sciroppo di zucchero|20 ml succo arancia|1 fetta arancia','Versa Campari, Prosecco, soda, sciroppo e succo arancia.|Mescola delicatamente senza sgasare troppo.|Avvia Frozen Cocktail.|Lascia lavorare circa 20 minuti e servi.','La Bicicletta viene meglio leggera: troppo Campari fatica a ghiacciare.'),
+          ('campari-prosecco-slush','Frozen cocktail','Campari Prosecco Slush','images/campari-prosecco-slush.jpg','140 ml Campari|220 ml Prosecco freddo|40 ml acqua fredda|35 ml sciroppo di zucchero|15 ml succo di limone','Unisci Campari, Prosecco, acqua, sciroppo e limone.|Mescola piano.|Versa nella Ninja SLUSHi.|Avvia Frozen Cocktail.','Piu secco della Bicicletta, piu elegante dello Spritz.'),
+          ('campari-tonic-frozen','Frozen cocktail','Campari Tonic Frozen','images/campari-tonic-frozen.jpg','120 ml Campari|220 ml acqua tonica fredda|30 ml sciroppo di zucchero|20 ml succo di lime','Versa Campari, tonica, sciroppo e lime.|Mescola velocemente.|Avvia Frozen Cocktail.|Servi appena diventa cremoso.','Amaro, fresco e molto estivo.'),
+          ('campari-pompelmo-frozen','Frozen cocktail','Campari Pompelmo Frozen','images/campari-pompelmo-frozen.jpg','110 ml Campari|160 ml succo di pompelmo rosa freddo|140 ml Prosecco freddo|35 ml sciroppo di zucchero|10 ml succo di limone','Unisci Campari, pompelmo, Prosecco, sciroppo e limone.|Mescola bene.|Versa nella macchina.|Avvia Frozen Cocktail.','Pompelmo e Campari stanno da paura: amarognolo e adulto.'),
+          ('prosecco-limone-slush','Frozen cocktail','Prosecco Limone Slush','images/prosecco-limone-slush.jpg','250 ml Prosecco freddo|80 ml limonata fredda|25 ml succo di limone|30 ml sciroppo di zucchero','Versa Prosecco, limonata, limone e sciroppo.|Mescola delicatamente.|Avvia Frozen Cocktail.|Servi con scorza di limone.','Sembra semplice, ma e una bomba da aperitivo.'),
+          ('prosecco-fragola-frozen','Frozen cocktail','Prosecco Fragola Frozen','images/prosecco-fragola-frozen.jpg','180 ml Prosecco freddo|140 g fragole fredde|40 ml acqua fredda|30 ml sciroppo di zucchero|15 ml succo di limone','Frulla fragole, acqua, sciroppo e limone.|Versa il frullato nel recipiente.|Aggiungi il Prosecco e mescola piano.|Avvia Frozen Cocktail.','Piu scenico del Bellini, meno banale dello Spritz.'),
+          ('latte-e-cacao-frozen','Milkshake','Latte e Cacao Frozen','images/latte-e-cacao-frozen.jpg','350 ml latte intero freddo|25 g cacao amaro|45 g zucchero|40 ml panna liquida fredda|1 cucchiaino vaniglia','Mescola cacao e zucchero.|Aggiungi il latte poco per volta evitando grumi.|Unisci panna e vaniglia.|Versa nella macchina e avvia Milkshake.','E un milkshake semplice, tipo merenda seria.'),
+          ('cioccolato-bianco-frozen','Milkshake','Cioccolato Bianco Frozen','images/cioccolato-bianco-frozen.jpg','320 ml latte freddo|90 g cioccolato bianco|40 ml panna liquida fredda|1 cucchiaino vaniglia','Sciogli il cioccolato bianco e lascialo intiepidire.|Mescolalo con latte freddo, panna e vaniglia.|Versa nella Ninja SLUSHi.|Avvia Milkshake.','Molto dolce e cremoso: cioccolato bianco buono e cambia tutto.'),
+          ('nesquik-slush','Milkshake','Nesquik Slush','images/nesquik-slush.jpg','350 ml latte freddo|45 g Nesquik|30 ml panna liquida fredda|15 g zucchero facoltativo','Versa il latte in una caraffa.|Aggiungi Nesquik e zucchero se vuoi.|Unisci la panna.|Versa nella macchina e avvia Milkshake.','Da bambini felici, ma in versione frozen.'),
+          ('pan-di-stelle-frozen','Ricette ignoranti','Pan di Stelle Frozen','images/pan-di-stelle-frozen.jpg','320 ml latte freddo|6 biscotti Pan di Stelle|20 g cacao amaro|35 ml panna liquida fredda|20 g zucchero','Spezzetta i biscotti.|Frullali con latte, cacao, panna e zucchero.|Versa nella Ninja SLUSHi.|Avvia Milkshake e servi con briciole sopra.','Ignorante vera: se la vuoi criminale aggiungi Nutella sul bicchiere.')]
 
-          for name in targets:
-              p = Path(name)
-              if not p.exists():
-                  continue
-              s = p.read_text(encoding='utf-8')
-              old = s
-              for snippet in snippets:
-                  s = s.replace(snippet, '')
-              if s != old:
-                  p.write_text(s, encoding='utf-8')
-                  changed = True
+          def art(r):
+              rid,cat,title,img,ing,steps,tip = r
+              ul = ''.join(f'<li data-original="{escape(x)}">{escape(x)}</li>' for x in ing.split('|'))
+              ol = ''.join(f'<li data-original="{escape(x)}">{escape(x)}</li>' for x in steps.split('|'))
+              search = escape((' '.join(r)).lower())
+              return f'''\n<article class="recipe" data-category="{escape(cat)}" data-image="{escape(img)}" data-name="{escape(title.lower())}" data-search="{search}" id="{escape(rid)}">\n<div class="recipe-top"><span class="badge">{escape(cat)}</span><a class="back" href="#indice">↑ indice</a></div>\n<h3>{escape(title)}</h3>\n<div class="recipe-photo-wrap"><img alt="{escape(title)}" class="recipe-photo" loading="lazy" src="{escape(img)}"/></div>\n<p class="meta">Ricetta · Circa 2 bicchieri</p>\n<div class="recipe-actions"><button class="fav-btn" type="button">♡ Preferito</button><button class="dose-btn" data-scale="0.5" type="button">½ dose</button><button class="dose-btn" data-scale="1" type="button">dose base</button><button class="dose-btn" data-scale="2" type="button">doppia</button><span class="dose-label">Dose ×1</span></div>\n<div class="cols"><section><h4>Ingredienti</h4><ul>{ul}</ul></section><section><h4>Procedura</h4><ol>{ol}</ol></section></div>\n<p class="tip"><b>Consiglio:</b> {escape(tip)}</p>\n</article>\n'''
 
-          if not changed:
-              raise SystemExit('Nothing changed')
+          block = '\n<!-- NUOVE RICETTE APERITIVO E MILKSHAKE -->\n'
+          added = 0
+          for r in data:
+              if 'id="'+r[0]+'"' not in html:
+                  block += art(r)
+                  added += 1
+          if added:
+              html = html.replace('</main>', block+'\n</main>', 1) if '</main>' in html else html+block
+              p.write_text(html, encoding='utf-8')
           PY
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html app-v3.html
-          git diff --cached --quiet || git commit -m "Remove difficulty from quick cards"
+          git add ricette-source.html
+          git diff --cached --quiet || git commit -m "Add aperitivo and milkshake recipes"
           git push
-# rerun remove difficulty item
+# rerun add recipes
