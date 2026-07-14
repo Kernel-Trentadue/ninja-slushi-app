@@ -1,4 +1,4 @@
-name: Replace duplicate second batch recipes
+name: Normalize recipes for Ninja manual limits
 on:
   workflow_dispatch:
   push:
@@ -10,40 +10,73 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: replace duplicates
+      - name: Normalize recipe volumes sugar and alcohol
         run: |
           python - <<'PY'
           from pathlib import Path
           from html import escape
           import re
-          p=Path('ricette-source.html')
-          h=p.read_text(encoding='utf-8')
-          remove_ids=['campari-arancia-rossa-frozen','prosecco-pesca-frozen','bounty-frozen','kinder-bueno-frozen']
-          for rid in remove_ids:
-            h=re.sub(r'\n?<article class="recipe"(?=[^>]*id="'+re.escape(rid)+r'")[\s\S]*?</article>\n?','\n',h)
-          data=[
-          ('campari-ananas-frozen','Frozen cocktail','Campari Ananas Frozen','images/campari-ananas-frozen.jpg','120 ml Campari|220 ml succo ananas freddo|80 ml soda fredda|35 ml sciroppo di zucchero|10 ml lime','Unisci Campari, ananas, soda, sciroppo e lime.|Mescola piano.|Versa nella macchina.|Avvia Frozen Cocktail.','Ananas addolcisce il Campari senza farlo diventare banale.'),
-          ('campari-mango-frozen','Frozen cocktail','Campari Mango Frozen','images/campari-mango-frozen.jpg','120 ml Campari|180 g mango freddo|140 ml acqua fredda|35 ml sciroppo di zucchero|15 ml lime','Frulla mango, acqua, sciroppo e lime.|Aggiungi Campari e mescola.|Versa nella Ninja SLUSHi.|Avvia Frozen Cocktail.','Più tropicale, ma resta amarognolo sul finale.'),
-          ('prosecco-kiwi-frozen','Frozen cocktail','Prosecco Kiwi Frozen','images/prosecco-kiwi-frozen.jpg','220 ml Prosecco freddo|2 kiwi maturi freddi|40 ml acqua fredda|30 ml sciroppo di zucchero|10 ml limone','Frulla kiwi, acqua, limone e sciroppo.|Aggiungi Prosecco e mescola piano.|Versa nella macchina.|Avvia Frozen Cocktail.','Acido, verde, fresco: diverso dai soliti prosecco fragola o pesca.'),
-          ('cioccolato-arancia-frozen','Milkshake','Cioccolato Arancia Frozen','images/cioccolato-arancia-frozen.jpg','320 ml latte freddo|80 g cioccolato fondente|40 ml panna fredda|25 g zucchero|Scorza arancia|10 ml succo arancia','Sciogli il cioccolato e fallo intiepidire.|Mescola con latte, panna, zucchero, succo e scorza.|Versa nella macchina.|Avvia Milkshake.','Fondente e arancia: più adulto del solito milkshake al cioccolato.')]
-          def art(r):
-            rid,cat,t,img,ing,steps,tip=r
-            ul=''.join('<li data-original="'+escape(x)+'">'+escape(x)+'</li>' for x in ing.split('|'))
-            ol=''.join('<li data-original="'+escape(x)+'">'+escape(x)+'</li>' for x in steps.split('|'))
-            search=escape((' '.join(r)).lower())
-            return f'\n<article class="recipe" data-category="{escape(cat)}" data-image="{escape(img)}" data-name="{escape(t.lower())}" data-search="{search}" id="{escape(rid)}">\n<div class="recipe-top"><span class="badge">{escape(cat)}</span><a class="back" href="#indice">↑ indice</a></div>\n<h3>{escape(t)}</h3>\n<div class="recipe-photo-wrap"><img alt="{escape(t)}" class="recipe-photo" loading="lazy" src="{escape(img)}"/></div>\n<p class="meta">Ricetta · Circa 2 bicchieri</p>\n<div class="recipe-actions"><button class="fav-btn" type="button">♡ Preferito</button><button class="dose-btn" data-scale="0.5" type="button">½ dose</button><button class="dose-btn" data-scale="1" type="button">dose base</button><button class="dose-btn" data-scale="2" type="button">doppia</button><span class="dose-label">Dose ×1</span></div>\n<div class="cols"><section><h4>Ingredienti</h4><ul>{ul}</ul></section><section><h4>Procedura</h4><ol>{ol}</ol></section></div>\n<p class="tip"><b>Consiglio:</b> {escape(tip)}</p>\n</article>\n'
-          block='\n<!-- SOSTITUZIONI BLOCCO 2 -->\n'
-          for r in data:
-            if 'id="'+r[0]+'"' not in h:
-              block+=art(r)
-          h=h.replace('</main>',block+'\n</main>',1) if '</main>' in h else h+block
-          p.write_text(h,encoding='utf-8')
+
+          p = Path('ricette-source.html')
+          h = p.read_text(encoding='utf-8')
+
+          updates = [
+          ('bicicletta-frozen','Frozen cocktail','Bicicletta Frozen','images/bicicletta-frozen.jpg','140 ml Campari|220 ml Prosecco ben freddo|180 ml soda fredda|40 ml sciroppo di zucchero|30 ml succo arancia','Versa tutti gli ingredienti ben freddi in una caraffa.|Mescola piano senza sgasare troppo il Prosecco.|Versa nella Ninja SLUSHi, senza ghiaccio.|Seleziona Frozen Cocktail e lascia lavorare fino alla consistenza desiderata.','Ricetta portata sopra il minimo macchina: circa 610 ml, zucchero sufficiente e alcol sotto il limite.'),
+          ('campari-prosecco-slush','Frozen cocktail','Campari Prosecco Slush','images/campari-prosecco-slush.jpg','160 ml Campari|260 ml Prosecco freddo|120 ml acqua fredda|50 ml sciroppo di zucchero|20 ml succo di limone','Unisci Campari, Prosecco, acqua, sciroppo e limone ben freddi.|Mescola piano.|Versa nella Ninja SLUSHi, senza ghiaccio.|Avvia Frozen Cocktail.','Base da circa 610 ml: più sicura per la macchina e non troppo alcolica.'),
+          ('campari-tonic-frozen','Frozen cocktail','Campari Tonic Frozen','images/campari-tonic-frozen.jpg','140 ml Campari|380 ml acqua tonica fredda|50 ml sciroppo di zucchero|30 ml succo di lime','Versa Campari, tonica, sciroppo e lime ben freddi.|Mescola delicatamente.|Versa nella macchina, senza ghiaccio.|Avvia Frozen Cocktail.','La tonica deve essere fredda; lo sciroppo aiuta la consistenza frozen.'),
+          ('campari-pompelmo-frozen','Frozen cocktail','Campari Pompelmo Frozen','images/campari-pompelmo-frozen.jpg','140 ml Campari|260 ml succo di pompelmo rosa freddo|180 ml Prosecco freddo|50 ml sciroppo di zucchero|20 ml succo di limone','Unisci tutto in caraffa con ingredienti freddi.|Mescola piano.|Versa nella Ninja SLUSHi.|Avvia Frozen Cocktail.','Circa 650 ml totali: amarognolo ma compatibile con la macchina.'),
+          ('prosecco-limone-slush','Frozen cocktail','Prosecco Limone Slush','images/prosecco-limone-slush.jpg','300 ml Prosecco freddo|180 ml limonata fredda|40 ml succo di limone|50 ml sciroppo di zucchero','Versa Prosecco, limonata, limone e sciroppo ben freddi.|Mescola piano.|Versa nella macchina, senza ghiaccio.|Avvia Frozen Cocktail.','Ricetta leggera: lo sciroppo è importante per non farla ghiacciare troppo dura.'),
+          ('prosecco-fragola-frozen','Frozen cocktail','Prosecco Fragola Frozen','images/prosecco-fragola-frozen.jpg','260 ml Prosecco freddo|200 g fragole fredde|100 ml acqua fredda|50 ml sciroppo di zucchero|20 ml succo di limone','Frulla fragole, acqua, sciroppo e limone fuori dalla macchina.|Aggiungi il Prosecco e mescola piano.|Versa nella Ninja SLUSHi, senza ghiaccio.|Avvia Frozen Cocktail.','Frutta sempre frullata prima: la macchina non deve fare da blender.'),
+          ('latte-e-cacao-frozen','Milkshake','Latte e Cacao Frozen','images/latte-e-cacao-frozen.jpg','500 ml latte intero freddo|80 ml panna liquida fredda|40 g cacao amaro|65 g zucchero|1 cucchiaino vaniglia','Mescola cacao e zucchero.|Aggiungi poco latte e sciogli bene i grumi, poi unisci il resto.|Versa nella Ninja SLUSHi ben freddo.|Avvia Milkshake.','Circa 580 ml liquidi: più adatto alla vasca minima della Ninja.'),
+          ('cioccolato-bianco-frozen','Milkshake','Cioccolato Bianco Frozen','images/cioccolato-bianco-frozen.jpg','500 ml latte freddo|100 ml panna liquida fredda|120 g cioccolato bianco|20 g zucchero facoltativo|1 cucchiaino vaniglia','Sciogli il cioccolato bianco e lascialo intiepidire.|Mescolalo con latte freddo, panna, vaniglia e zucchero se vuoi.|Raffredda bene il composto.|Versa nella macchina e avvia Milkshake.','Il cioccolato bianco porta già zucchero: non usare dolcificanti artificiali.'),
+          ('nesquik-slush','Milkshake','Nesquik Slush','images/nesquik-slush.jpg','520 ml latte freddo|80 ml panna liquida fredda|70 g Nesquik','Mescola latte e Nesquik fino a sciogliere tutto.|Aggiungi la panna fredda.|Versa nella Ninja SLUSHi.|Avvia Milkshake.','Dose portata a circa 600 ml: più stabile e cremosa.'),
+          ('pan-di-stelle-frozen','Ricette ignoranti','Pan di Stelle Frozen','images/pan-di-stelle-frozen.jpg','520 ml latte freddo|90 ml panna liquida fredda|8 biscotti Pan di Stelle|30 g cacao amaro|45 g zucchero','Frulla tutto fuori dalla macchina fino a crema liscia.|Versa nella Ninja SLUSHi, senza pezzi grossi.|Avvia Milkshake.|Servi con briciole solo sopra, non dentro la vasca.','I biscotti devono essere frullati bene: niente pezzi interi nella macchina.'),
+          ('prosecco-melone-slush','Frozen cocktail','Prosecco Melone Slush','images/prosecco-melone-slush.jpg','240 ml Prosecco freddo|250 g melone freddo|80 ml acqua fredda|40 ml sciroppo di zucchero|20 ml succo di limone','Frulla melone, acqua, sciroppo e limone fuori dalla macchina.|Aggiungi Prosecco freddo e mescola piano.|Versa nella Ninja SLUSHi.|Avvia Frozen Cocktail.','Melone frullato prima e volume più sicuro per la vasca.'),
+          ('hugo-fragola-frozen','Frozen cocktail','Hugo Fragola Frozen','images/hugo-fragola-frozen.jpg','240 ml Prosecco freddo|120 ml sciroppo di sambuco|140 g fragole fredde|120 ml soda fredda|20 ml succo di lime|Menta','Frulla fragole, sambuco e lime fuori dalla macchina.|Aggiungi Prosecco, soda e menta.|Mescola piano e filtra se vuoi una texture più liscia.|Versa nella Ninja SLUSHi e avvia Frozen Cocktail.','Versione sopra il minimo macchina e con zucchero sufficiente.'),
+          ('nutella-banana-frozen','Milkshake','Nutella Banana Frozen','images/nutella-banana-frozen.jpg','500 ml latte freddo|80 ml panna fredda|1 banana matura fredda|90 g Nutella|15 g cacao','Frulla tutto fuori dalla macchina fino a base liscia.|Raffredda bene se si è scaldata nel blender.|Versa nella Ninja SLUSHi.|Avvia Milkshake.','Base cremosa e compatibile: non mettere cucchiaiate intere di Nutella direttamente nella vasca.'),
+          ('cioccolato-fondente-rum-frozen','Milkshake','Cioccolato Fondente Rum Frozen','images/cioccolato-fondente-rum-frozen.jpg','500 ml latte freddo|100 ml panna fredda|50 ml rum|110 g cioccolato fondente|45 g zucchero','Sciogli il fondente e lascialo intiepidire.|Mescola con latte, panna, rum e zucchero.|Raffredda bene.|Versa nella Ninja SLUSHi e avvia Milkshake.','Rum moderato: sapore adulto ma alcol basso abbastanza da mantecare.'),
+          ('campari-ananas-frozen','Frozen cocktail','Campari Ananas Frozen','images/campari-ananas-frozen.jpg','150 ml Campari|300 ml succo ananas freddo|120 ml soda fredda|50 ml sciroppo di zucchero|20 ml succo di lime','Unisci tutti gli ingredienti ben freddi.|Mescola piano.|Versa nella Ninja SLUSHi, senza ghiaccio.|Avvia Frozen Cocktail.','Ananas addolcisce il Campari e lo sciroppo aiuta la struttura.'),
+          ('campari-mango-frozen','Frozen cocktail','Campari Mango Frozen','images/campari-mango-frozen.jpg','150 ml Campari|250 g mango freddo|180 ml acqua fredda|50 ml sciroppo di zucchero|20 ml succo di lime','Frulla mango, acqua, sciroppo e lime fuori dalla macchina.|Aggiungi Campari e mescola.|Versa nella Ninja SLUSHi.|Avvia Frozen Cocktail.','Il mango va frullato fine: se è fibroso, passa al colino.'),
+          ('prosecco-kiwi-frozen','Frozen cocktail','Prosecco Kiwi Frozen','images/prosecco-kiwi-frozen.jpg','260 ml Prosecco freddo|3 kiwi maturi freddi|120 ml acqua fredda|50 ml sciroppo di zucchero|20 ml succo di limone','Frulla kiwi, acqua, limone e sciroppo fuori dalla macchina.|Aggiungi Prosecco e mescola piano.|Filtra se non vuoi i semini.|Versa nella Ninja SLUSHi e avvia Frozen Cocktail.','Kiwi e Prosecco stanno bassi di alcol; occhio solo ai semini.'),
+          ('cioccolato-arancia-frozen','Milkshake','Cioccolato Arancia Frozen','images/cioccolato-arancia-frozen.jpg','500 ml latte freddo|100 ml panna fredda|100 g cioccolato fondente|50 g zucchero|20 ml succo arancia|Scorza arancia','Sciogli il cioccolato e lascialo intiepidire.|Mescola con latte, panna, zucchero, succo e scorza.|Raffredda bene.|Versa nella Ninja SLUSHi e avvia Milkshake.','Fondente e arancia: base più grande e sicura per la macchina.'),
+          ('mai-tai-frozen','Frozen cocktail','Mai Tai Frozen','images/mai-tai-frozen.jpg','150 ml rum chiaro|100 ml rum scuro|80 ml orange curaçao|150 ml succo di lime|300 ml succo ananas freddo|140 ml acqua fredda|120 ml orzata','Mescola tutti gli ingredienti freddi in caraffa.|Assaggia: deve essere dolce-acido, non troppo alcolico.|Versa nella Ninja SLUSHi, senza ghiaccio.|Avvia Frozen Cocktail.','Versione corretta sotto il limite alcolico della macchina.'),
+          ('long-island-slush','Frozen cocktail','Long Island Slush','images/long-island-slush.jpg','70 ml vodka|70 ml gin|70 ml rum bianco|70 ml tequila|70 ml triple sec|500 ml cola fredda|150 ml succo di limone|200 ml acqua fredda|80 ml sciroppo di zucchero','Mescola tutti gli ingredienti molto freddi in caraffa.|Sgasa leggermente la cola mescolando piano.|Versa nella Ninja SLUSHi, senza ghiaccio.|Avvia Frozen Cocktail.','Long Island abbassato e diluito: resta alcolico, ma rientra meglio nel limite 16%.'),
+          ('mojito-xxl-da-festa','Ricette ignoranti','Mojito XXL da festa','images/mojito-xxl-da-festa.jpg','300 ml rum bianco|550 ml soda fredda|150 ml succo di lime|180 g zucchero|Menta abbondante','Sciogli bene lo zucchero nel lime e in parte della soda.|Aggiungi rum, resto della soda e menta.|Mescola e filtra se vuoi evitare foglie nella vasca.|Versa nella Ninja SLUSHi e avvia Frozen Cocktail.','Rum abbassato rispetto alla versione originale: più sicuro per la macchina.'),
+          ]
+
+          def article(r):
+              rid, cat, title, img, ing, steps, tip = r
+              ing_list = ''.join('<li data-original="'+escape(x)+'">'+escape(x)+'</li>' for x in ing.split('|'))
+              step_list = ''.join('<li data-original="'+escape(x)+'">'+escape(x)+'</li>' for x in steps.split('|'))
+              search = escape((' '.join(r)).lower())
+              return f'''\n<article class="recipe" data-category="{escape(cat)}" data-image="{escape(img)}" data-name="{escape(title.lower())}" data-search="{search}" id="{escape(rid)}">\n<div class="recipe-top"><span class="badge">{escape(cat)}</span><a class="back" href="#indice">↑ indice</a></div>\n<h3>{escape(title)}</h3>\n<div class="recipe-photo-wrap"><img alt="{escape(title)}" class="recipe-photo" loading="lazy" src="{escape(img)}"/></div>\n<p class="meta">Ricetta corretta · Dose macchina sicura</p>\n<div class="recipe-actions"><button class="fav-btn" type="button">♡ Preferito</button><button class="dose-btn" data-scale="0.5" type="button">½ dose</button><button class="dose-btn" data-scale="1" type="button">dose base</button><button class="dose-btn" data-scale="2" type="button">doppia</button><span class="dose-label">Dose ×1</span></div>\n<div class="cols"><section><h4>Ingredienti</h4><ul>{ing_list}</ul></section><section><h4>Procedura</h4><ol>{step_list}</ol></section></div>\n<p class="tip"><b>Consiglio:</b> {escape(tip)}</p>\n</article>\n'''
+
+          for r in updates:
+              rid = r[0]
+              new = article(r)
+              pattern = r'\n?<article class="recipe"(?=[^>]*id="'+re.escape(rid)+r'")[\s\S]*?</article>\n?'
+              h2, n = re.subn(pattern, '\n'+new+'\n', h, count=1)
+              if n == 0:
+                  if '</main>' in h:
+                      h = h.replace('</main>', '\n<!-- RICETTA NORMALIZZATA MANUALE -->\n'+new+'\n</main>', 1)
+                  else:
+                      h += '\n'+new
+              else:
+                  h = h2
+
+          # add a small technical note to guide category if not present
+          note_id = 'regole-manuale-ninja-slushi'
+          if f'id="{note_id}"' not in h:
+              note = article((note_id,'Regole base e consigli','Regole tecniche dal manuale','images/formula-base-granita.jpg','Minimo 475 ml nella vasca|Massimo 1890 ml nella vasca|Almeno 5 g di zucchero ogni 100 ml|Cocktail frozen tra 2,8% e 16% alcol|Ingredienti sempre freddi|No ghiaccio nella vasca','Prepara la base fuori dalla macchina.|Frulla o sciogli bene zucchero, cacao, creme e frutta.|Raffredda il composto in frigo.|Versa nella Ninja SLUSHi rispettando minimo e massimo.|Scegli il preset più adatto e lascia lavorare.','Queste regole vengono dal manuale: servono a evitare blocchi, miscela troppo dura o cocktail che non ghiacciano.'))
+              h = h.replace('</main>', note+'\n</main>', 1) if '</main>' in h else h+note
+
+          p.write_text(h, encoding='utf-8')
           PY
-      - name: commit
+      - name: Commit normalized recipes
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add ricette-source.html
-          git diff --cached --quiet || git commit -m "Replace duplicate second batch recipes"
+          git diff --cached --quiet || git commit -m "Normalize recipes for Ninja manual limits"
           git push
-# rerun replace duplicate recipes
+# rerun normalize recipes manual limits
