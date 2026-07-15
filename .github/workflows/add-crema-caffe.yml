@@ -1,0 +1,71 @@
+name: Add crema caffe directly
+on:
+  workflow_dispatch:
+  push:
+    paths: ['trigger-add-crema-caffe.txt']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Insert crema di caffe del bar recipe
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('ricette-source.html')
+          h = p.read_text(encoding='utf-8')
+          rid = 'crema-di-caffe-del-bar'
+          if rid in h:
+              print('already present')
+              raise SystemExit
+          article = '''
+<article class="recipe" data-category="Caffè e bevande fredde" data-image="images/crema-di-caffe-del-bar.jpg" data-name="crema di caffe del bar" data-search="caffè e bevande fredde crema di caffe del bar crema caffè bar panna latte espresso freddo zucchero milkshake frozen drink" id="crema-di-caffe-del-bar">
+<div class="recipe-top"><span class="badge">Caffè e bevande fredde</span><a class="back" href="#indice">↑ indice</a></div>
+<h3>Crema di caffè del bar</h3>
+<div class="recipe-photo-wrap"><img alt="Crema di caffè del bar" class="recipe-photo" loading="lazy" src="images/crema-di-caffe-del-bar.jpg"/></div>
+<p class="meta">Ricetta classica · circa 800 ml</p>
+<div class="recipe-actions"><button class="fav-btn" type="button">♡ Preferito</button><button class="dose-btn" data-scale="0.5" type="button">½ dose</button><button class="dose-btn" data-scale="1" type="button">dose base</button><button class="dose-btn" data-scale="2" type="button">doppia</button><span class="dose-label">Dose ×1</span></div>
+<div class="cols"><section><h4>Ingredienti</h4><ul>
+<li data-original="300 ml caffè espresso freddo">300 ml caffè espresso freddo</li>
+<li data-original="300 ml latte intero freddo">300 ml latte intero freddo</li>
+<li data-original="200 ml panna fresca liquida fredda">200 ml panna fresca liquida fredda</li>
+<li data-original="100 g zucchero">100 g zucchero</li>
+<li data-original="20 g latte condensato facoltativo">20 g latte condensato facoltativo</li>
+<li data-original="Cacao amaro per servire">Cacao amaro per servire</li>
+</ul></section><section><h4>Procedura</h4><ol>
+<li data-original="Fai il caffè e lascialo raffreddare completamente.">Fai il caffè e lascialo raffreddare completamente.</li>
+<li data-original="Mescola caffè, latte, panna e zucchero fuori dalla macchina.">Mescola caffè, latte, panna e zucchero fuori dalla macchina.</li>
+<li data-original="Sciogli benissimo lo zucchero e aggiungi il latte condensato se vuoi più cremosità.">Sciogli benissimo lo zucchero e aggiungi il latte condensato se vuoi più cremosità.</li>
+<li data-original="Metti la miscela in frigo almeno 1 ora: deve entrare fredda.">Metti la miscela in frigo almeno 1 ora: deve entrare fredda.</li>
+<li data-original="Versa nella Ninja SLUSHi senza ghiaccio.">Versa nella Ninja SLUSHi senza ghiaccio.</li>
+<li data-original="Avvia Milkshake oppure Frozen Drink fino a consistenza cremosa.">Avvia Milkshake oppure Frozen Drink fino a consistenza cremosa.</li>
+</ol></section></div>
+<p class="tip"><b>Consiglio:</b> È la crema di caffè classica da bar: fredda, dolce e cremosa. Non mettere caffè caldo nella vasca.</p>
+</article>
+'''
+          # add to toc if possible
+          toc = '<a href="#crema-di-caffe-del-bar">Crema di caffè del bar</a>'
+          marker = '<section class="toc-block" data-category="Caffè e bevande fredde">'
+          if marker in h and toc not in h:
+              pos = h.find(marker)
+              div_start = h.find('<div class="toc-links">', pos)
+              div_end = h.find('</div>', div_start)
+              if div_start != -1 and div_end != -1:
+                  h = h[:div_end] + toc + h[div_end:]
+          # insert article before end main
+          if '</main>' in h:
+              h = h.replace('</main>', '\n<!-- RICETTA AGGIUNTA: CREMA DI CAFFE DEL BAR -->\n' + article + '\n</main>', 1)
+          else:
+              h += article
+          h = h.replace('Mostro 169 ricette/schede', 'Mostro 170 ricette/schede')
+          p.write_text(h, encoding='utf-8')
+          PY
+      - name: Commit recipe
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add ricette-source.html
+          git diff --cached --quiet || git commit -m "Add crema di caffe del bar recipe"
+          git push
