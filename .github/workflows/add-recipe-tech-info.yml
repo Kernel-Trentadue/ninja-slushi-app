@@ -1,4 +1,4 @@
-name: Change dose buttons to min base max
+name: Add crema di caffe recipe
 on:
   workflow_dispatch:
   push:
@@ -10,69 +10,65 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch dose controls
+      - name: Add crema di caffe del bar
         run: |
           python - <<'PY'
           from pathlib import Path
+          from html import escape
           import re
-          p=Path('index.html')
-          h=p.read_text(encoding='utf-8')
-          start=h.index('function wireRecipe(card){')
-          end=h.index('function recipeTechInfo', start)
-          new=r'''function estimateRecipeMl(card){
- let total=0;
- const includeG=/fragol|pesca|mango|melone|anguria|ananas|kiwi|banana|lampone|cilieg|albicocc|pera|mela|frutti|bosco|polpa|yogurt|gelato|ricotta|mascarpone|formaggio|nutella|cioccolato|panna cotta|crema|latte condensato|miele/i;
- const excludeG=/zucchero|cacao|biscott|oreo|pan di stelle|noci|mandorle|nocciole|pistacchi|menta|scorza|vaniglia|cannella/i;
- $$('li',card).forEach(li=>{
-   const t=li.getAttribute('data-original')||li.textContent||'';
-   t.replace(/(\d+(?:[,.]\d+)?)\s*ml\b/gi,(m,n)=>{total+=parseFloat(n.replace(',','.'))||0});
-   t.replace(/(\d+(?:[,.]\d+)?)\s*l\b/gi,(m,n)=>{total+=(parseFloat(n.replace(',','.'))||0)*1000});
-   if(includeG.test(t) && !excludeG.test(t)) t.replace(/(\d+(?:[,.]\d+)?)\s*g\b/gi,(m,n)=>{total+=parseFloat(n.replace(',','.'))||0});
-   t.replace(/(\d+(?:[,.]\d+)?)\s*kg\b/gi,(m,n)=>{total+=(parseFloat(n.replace(',','.'))||0)*1000});
- });
- return Math.max(total,0);
-}
-function niceScaleLabel(scale,mode){
- if(mode==='min')return 'Dose minima';
- if(mode==='max')return 'Dose massima';
- return 'Dose base';
-}
-function wireRecipe(card){
- const favBtn=card.querySelector('.fav-btn'), doseBtns=$$('.dose-btn',card), doseLabel=card.querySelector('.dose-label'), key='slushi_fav_'+card.id;
- decorateBadge(card);
- if(favBtn){const on=safeGet(key)==='1';card.classList.toggle('isFav',on);favBtn.classList.toggle('fav-on',on);favBtn.textContent=on?'❤️ Preferito':'♡ Preferito';favBtn.onclick=function(){const now=!card.classList.contains('isFav');card.classList.toggle('isFav',now);favBtn.classList.toggle('fav-on',now);favBtn.textContent=now?'❤️ Preferito':'♡ Preferito';safeSet(key,now?'1':'0');updateFavButton()}}
- if(doseBtns.length){
-   const baseMl=estimateRecipeMl(card)||700;
-   const modes=['min','base','max'];
-   const labels=['Dose minima','Dose base','Dose massima'];
-   doseBtns.forEach((btn,i)=>{btn.textContent=labels[i]||labels[1];btn.setAttribute('data-mode',modes[i]||'base');btn.removeAttribute('data-scale')});
-   function applyDose(mode,btn){
-     let scale=1;
-     if(mode==='min') scale=475/baseMl;
-     if(mode==='max') scale=1890/baseMl;
-     if(mode==='base') scale=1;
-     $$('li',card).forEach(li=>{const original=li.getAttribute('data-original')||li.textContent;li.textContent=scaleText(original,scale)});
-     doseBtns.forEach(b=>b.classList.remove('active'));
-     if(btn)btn.classList.add('active');
-     if(doseLabel){
-       const ml=Math.round(baseMl*scale);
-       doseLabel.textContent=niceScaleLabel(scale,mode)+' · circa '+ml+' ml';
-     }
-   }
-   doseBtns.forEach(btn=>{btn.onclick=function(){applyDose(btn.getAttribute('data-mode')||'base',btn)}});
-   const baseBtn=doseBtns.find(b=>(b.getAttribute('data-mode')==='base'))||doseBtns[1]||doseBtns[0];
-   applyDose('base',baseBtn);
- }
-}
+
+          p = Path('ricette-source.html')
+          h = p.read_text(encoding='utf-8')
+          rid = 'crema-di-caffe-del-bar'
+          if f'id="{rid}"' not in h:
+              cat = 'Caffè e bevande fredde'
+              title = 'Crema di caffè del bar'
+              img = 'images/crema-di-caffe-del-bar.jpg'
+              ingredients = [
+                  '300 ml caffè espresso freddo',
+                  '300 ml latte intero freddo',
+                  '200 ml panna fresca liquida fredda',
+                  '100 g zucchero',
+                  '20 g latte condensato facoltativo',
+                  'Cacao amaro per servire'
+              ]
+              steps = [
+                  'Prepara il caffè e fallo raffreddare completamente.',
+                  'Mescola caffè, latte, panna e zucchero fuori dalla macchina.',
+                  'Sciogli benissimo lo zucchero: non devono restare granelli.',
+                  'Metti il composto in frigo almeno 1 ora, meglio se molto freddo.',
+                  'Versa nella Ninja SLUSHi, senza ghiaccio.',
+                  'Avvia Milkshake oppure Frozen Drink, poi servi subito con cacao sopra.'
+              ]
+              tip = 'Dose da circa 800 ml: perfetta per la macchina. Il latte condensato la rende più cremosa e più simile a quella del bar.'
+              ing_html = ''.join(f'<li data-original="{escape(x)}">{escape(x)}</li>' for x in ingredients)
+              step_html = ''.join(f'<li data-original="{escape(x)}">{escape(x)}</li>' for x in steps)
+              search = escape((cat+' '+title+' crema caffe caffè bar milkshake panna latte condensato').lower())
+              art = f'''
+<article class="recipe" data-category="{escape(cat)}" data-image="{escape(img)}" data-name="{escape(title.lower())}" data-search="{search}" id="{rid}">
+<div class="recipe-top"><span class="badge">{escape(cat)}</span><a class="back" href="#indice">↑ indice</a></div>
+<h3>{escape(title)}</h3>
+<div class="recipe-photo-wrap"><img alt="{escape(title)}" class="recipe-photo" loading="lazy" src="{escape(img)}"/></div>
+<p class="meta">Ricetta classica · Circa 800 ml</p>
+<div class="recipe-actions"><button class="fav-btn" type="button">♡ Preferito</button><button class="dose-btn" data-scale="0.5" type="button">Dose minima</button><button class="dose-btn" data-scale="1" type="button">Dose base</button><button class="dose-btn" data-scale="2" type="button">Dose massima</button><span class="dose-label">Dose base</span></div>
+<div class="cols"><section><h4>Ingredienti</h4><ul>{ing_html}</ul></section><section><h4>Procedura</h4><ol>{step_html}</ol></section></div>
+<p class="tip"><b>Consiglio:</b> {escape(tip)}</p>
+</article>
 '''
-          h=h[:start]+new+h[end:]
-          p.write_text(h,encoding='utf-8')
+              marker='</main>'
+              if marker in h:
+                  h = h.replace(marker, '\n<!-- RICETTA AGGIUNTA: CREMA DI CAFFE -->\n'+art+'\n'+marker, 1)
+              else:
+                  h += '\n'+art
+              # update counter text if present
+              h = re.sub(r'Mostro\s+(\d+)\s+ricette/schede', lambda m: 'Mostro '+str(int(m.group(1))+1)+' ricette/schede', h, count=1)
+              p.write_text(h, encoding='utf-8')
           PY
-      - name: Commit dose controls
+      - name: Commit recipe
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add index.html
-          git diff --cached --quiet || git commit -m "Change dose buttons to min base max"
+          git add ricette-source.html
+          git diff --cached --quiet || git commit -m "Add crema di caffe del bar recipe"
           git push
-# trigger dose controls min base max
+# trigger add crema caffe
